@@ -80,8 +80,10 @@ class CanvasComponent {
     this._gradient.addColorStop(1, '#d32daf');
     
     for (let i = 0; i < this._rectangles.length; i++) {
+      this._ctx.beginPath();
       this._ctx.fillStyle = this._gradient;
       this._ctx.fillRect(this._rectangles[i].position.x, this._rectangles[0].position.y, this._rectangles[i].width, this._rectangles[i].height );
+      this._ctx.closePath();
     }
 
   } 
@@ -91,9 +93,11 @@ class CanvasComponent {
 
     const index = this._activeRectangle;
 
-    this._ctx.strokeStyle = 'white';
+    this._ctx.beginPath();
+    this._ctx.strokeStyle = 'blue';
     this._ctx.rect(this._rectangles[index].position.x, this._rectangles[index].position.y, this._rectangles[index].width, this._rectangles[index].height);
     this._ctx.stroke();
+    this._ctx.closePath();
   }
 
   _updateRectanglesPositions() {
