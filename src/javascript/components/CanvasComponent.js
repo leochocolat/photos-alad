@@ -18,7 +18,8 @@ class CanvasComponent {
     this._ctx = this._canvas.getContext('2d');
 
     this._settings = {
-      scrollVelocity: 0.5
+      scrollVelocityFactor: 0.5,
+      marginFactor: 0.5
     }
 
     this._init();
@@ -40,7 +41,7 @@ class CanvasComponent {
     const number = 100;
     const width = 300;
     const height = 400;
-    this._margin = 50;
+    const margin = 50;
     
     this._rectangles = [];
     for (let i = 0; i <= number; i++) {
@@ -48,7 +49,7 @@ class CanvasComponent {
         width: width,
         height: height,
         position: {
-          x: (width * i) - (width / 2) + i * this._margin,
+          x: (width * i) - (width / 2) +  i * margin,
           y: (this._height / 2) - (height / 2)
         }
       }
@@ -70,20 +71,30 @@ class CanvasComponent {
     this._ctx.fill();
     this._ctx.closePath();
   }
-
+  
   _createRectangles() {
     
     this._gradient = this._ctx.createLinearGradient(0, 0, this._width, 0);
     this._gradient.addColorStop(0, '#7ff7ad');
     this._gradient.addColorStop(0.5, '#629df8');
     this._gradient.addColorStop(1, '#d32daf');
-
+    
     for (let i = 0; i < this._rectangles.length; i++) {
       this._ctx.fillStyle = this._gradient;
       this._ctx.fillRect(this._rectangles[i].position.x, this._rectangles[0].position.y, this._rectangles[i].width, this._rectangles[i].height );
     }
 
   } 
+
+  _createActiveRectangle() {
+    if(!this._activeRectangle) return;
+
+    const index = this._activeRectangle;
+
+    this._ctx.strokeStyle = 'white';
+    this._ctx.rect(this._rectangles[index].position.x, this._rectangles[index].position.y, this._rectangles[index].width, this._rectangles[index].height);
+    this._ctx.stroke();
+  }
 
   _updateRectanglesPositions() {
     if (!this._isScrolling) return;
@@ -94,7 +105,7 @@ class CanvasComponent {
   }
 
   _scrollManager(e) {
-      this._scrollVelocity = e.deltaY * this._settings.scrollVelocity;
+      this._scrollVelocity = e.deltaY * this._settings.scrollVelocityFactor;
   }
 
   _updateCursorPosition(e) {
@@ -110,12 +121,14 @@ class CanvasComponent {
   _draw() {
     this._ctx.clearRect(0, 0, this._width, this._height);
     this._createRectangles();
-
+    
     this._createCursor();
-
+    
     this._updateCursorPosition();
-
+    
     this._updateRectanglesPositions();
+
+    this._createActiveRectangle();
   }
 
   _resize() {
@@ -126,12 +139,24 @@ class CanvasComponent {
     this._canvas.height = this._height;
   }
 
+  _hitDetection(e) {
+    const posX = e.clientX;
+    const posY = e.clientY;
+
+    for (let i = 0; i < this._rectangles.length; i++) {
+      if ( posX > this._rectangles[i].position.x && posX < this._rectangles[i].position.x + this._rectangles[i].width && posY > this._rectangles[i].position.y && posY < this._rectangles[i].position.y + this._rectangles[i].height ) {
+        this._activeRectangle = i;
+      }
+    }
+  }
+
   _setupEventListener() {
     TweenLite.ticker.addEventListener('tick', this._tickHandler);
 
     window.addEventListener('resize', this._resizeHandler);
 
     window.addEventListener('mousemove', this._mousemoveHandler);
+
     window.addEventListener('mousewheel', this._mousewheelHandler);
   }
 
@@ -144,19 +169,24 @@ class CanvasComponent {
   }
 
   _mousewheelHandler(e) {
-    this._scrollManager(e);
-
     if (this._scrollTween) {
       this._scrollTween.kill();
     }
-    
+
     this._isScrolling = true;
+
+    this._scrollManager(e);
     
     clearTimeout(this._mouseWheelTimeout);
     this._mouseWheelTimeout = setTimeout(() => {
-      this._scrollTween = TweenMax.to(this, 0.3, { _scrollVelocity: 0, ease: Power0.easeNone });
+      this._mousewheelEndHandler();
     }, 100);
 
+  }
+
+  _mousewheelEndHandler() {
+    //Ease end of scroll
+    this._scrollTween = TweenMax.to(this, 0.3, { _scrollVelocity: 0, ease: Power0.easeNone });
   }
 
   _mousemoveHandler(e) {
@@ -164,6 +194,7 @@ class CanvasComponent {
       x: e.clientX,
       y: e.clientY
     }
+    this._hitDetection(e);
   }
 
 }
