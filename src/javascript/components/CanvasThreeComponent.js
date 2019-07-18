@@ -22,8 +22,8 @@ class CanvasThreeComponent {
 
     _init() {
         this._scene = new THREE.Scene();
-        this._camera = new THREE.PerspectiveCamera(75, this._width/this._height, 1, 10000); 
-        this._camera.position.y = 10;//Look Down   
+        this._camera = new THREE.PerspectiveCamera(75, this._width/this._height, 1, 10000);    
+        this._camera.position.z = 50;//Look Down   
         this._camera.lookAt(0, 0, 0);
         this._renderer = new THREE.WebGLRenderer({
             canvas: this._canvas, 
@@ -35,8 +35,6 @@ class CanvasThreeComponent {
         this._build();
         this._setupLights();
         this._setupControls();
-        
-        console.log('NOISE');
     }
 
     // _loadTexture() {
@@ -49,19 +47,20 @@ class CanvasThreeComponent {
     // },
 
     _build() {
-        this._material = new THREE.ShaderMaterial({
+        this._material = new THREE.MeshBasicMaterial({
             side: THREE.DoubleSide,
         });
 
-        this._geometry = new THREE.PlaneGeometry(20, 20);
+        this._geometry = new THREE.PlaneGeometry(20, 25);
 
         this._plane = new THREE.Mesh(this._geometry, this._material);
-        this._plane.emissive = new THREE.Color(0x0000ff);
-        this._plane.emissiveIntensity = 1;
         this._plane.position.set(0, 0, 0);
-        this._plane.rotation.x = -1.55;
 
-        this._addMeshesToScene();
+        for (let i = 0; i < 50; i++) {
+            let plane = new THREE.Mesh(this._geometry, this._material);
+            plane.position.z = -20 * i;
+            this._addMeshesToScene(plane);
+        }
     }
 
     _setupLights() {
@@ -85,8 +84,8 @@ class CanvasThreeComponent {
         this._renderer.render(this._scene, this._camera);
     }
 
-    _addMeshesToScene() {
-        this._scene.add(this._plane);
+    _addMeshesToScene(mesh) {
+        this._scene.add(mesh);
     }
 
     _addLightsToScene() {
