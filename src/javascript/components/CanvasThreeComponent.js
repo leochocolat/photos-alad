@@ -5,6 +5,10 @@ import * as THREE from 'three';
 // import * as dat from 'dat.gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+// data
+import data from '../../assets/data/data.json'; 
+import TextureLoader from '../utils/TextureLoader.js';
+
 //utils
 class CanvasThreeComponent {
 
@@ -16,49 +20,66 @@ class CanvasThreeComponent {
         );
 
         this._canvas = document.querySelector('.js-canvas-component');
-    
+        this._delta = 0;
         this._init();
+
     }
 
     _init() {
         this._scene = new THREE.Scene();
-        this._camera = new THREE.PerspectiveCamera(75, this._width/this._height, 1, 10000);    
-        this._camera.position.z = 50;//Look Down   
-        this._camera.lookAt(0, 0, 0);
+        this._camera = new THREE.PerspectiveCamera(100, this._width/this._height, 1, 10000);    
+        this._camera.position.z = 200;
+        this._camera.lookAt(0, 0, 200);
         this._renderer = new THREE.WebGLRenderer({
             canvas: this._canvas, 
-            antialias: true,
+            antialias: false,
+            alpha: true
         });
+        this._renderer.setClearColor(0xffffff, 0);
         this._setupEventListener();
         this._resize();
-        // this._loadTexture();
-        this._build();
+        this._loadTextures();
         this._setupLights();
         this._setupControls();
     }
 
-    // _loadTexture() {
-    //     this._image = 'assets/img/noise.jpg';
-    //     return new Promise(resolve => {
-    //         this._texture = new THREE.TextureLoader().load(this._image, resolve);
-    //     }).then(() => {
-    //         this._build();
-    //     });
-    // },
 
-    _build() {
-        this._material = new THREE.MeshBasicMaterial({
-            side: THREE.DoubleSide,
+    _loadTextures() {
+
+        let path = './assets/images/';
+        let promises = [];
+        let texture;
+        
+        for (let i = 0; i < data.length; i++) {
+
+            let image = `${path}${data[i].fileName}`;
+
+            let promise = 
+            new Promise(resolve => {
+                texture = new THREE.TextureLoader().load(image, resolve);
+            });
+
+            promises.push(promise);
+        }
+
+        Promise.all(promises).then(result => {
+            this._textures = result;
+            console.log()
+            this._build();
         });
 
+    }
+
+    _build() {
         this._geometry = new THREE.PlaneGeometry(20, 25);
 
-        this._plane = new THREE.Mesh(this._geometry, this._material);
-        this._plane.position.set(0, 0, 0);
-
-        for (let i = 0; i < 50; i++) {
-            let plane = new THREE.Mesh(this._geometry, this._material);
-            plane.position.z = -20 * i;
+        for (let i = 0; i < data.length; i++) {
+            let material = new THREE.MeshBasicMaterial({
+                side: THREE.DoubleSide,
+                map: this._textures[i]
+            });
+            let plane = new THREE.Mesh(this._geometry, material);
+            plane.position.z = 50 * i;
             this._addMeshesToScene(plane);
         }
     }
@@ -81,6 +102,10 @@ class CanvasThreeComponent {
     }
 
     _draw() {
+        
+        // this._delta += 0.01;
+        // this._camera.position.z = 200 * Math.cos(this._delta);
+
         this._renderer.render(this._scene, this._camera);
     }
 
