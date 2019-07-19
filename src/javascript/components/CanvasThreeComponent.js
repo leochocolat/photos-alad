@@ -19,7 +19,8 @@ class CanvasThreeComponent {
             '_tickHandler',
             '_resizeHandler',
             '_setupControls',
-            '_init'
+            '_init',
+            '_wheelHandler'
         );
 
         this._settings = {
@@ -54,6 +55,7 @@ class CanvasThreeComponent {
         this._scene = new THREE.Scene();
         this._camera = new THREE.PerspectiveCamera(100, this._width/this._height, 1, 10000);    
         this._camera.position.z = 20;
+        this._camera.position.x = -11;
         this._camera.lookAt(0, 0, 0);
         this._renderer = new THREE.WebGLRenderer({
             canvas: this._canvas, 
@@ -122,12 +124,13 @@ class CanvasThreeComponent {
     }
 
     _draw() {
+        if (this._settings.controls.autoRotate) {
+            console.log(this._camera.position);
+        }
         if (this._settings.allowCameraAnimation) {
             this._delta += this._settings.animationSpeed / 1000;
             this._camera.position.z = 200 * Math.cos(this._delta);
         }
-
-        // console.log(this._camera.position.z);
         this._renderer.render(this._scene, this._camera);
     }
 
@@ -152,14 +155,12 @@ class CanvasThreeComponent {
     }
 
     _tick() {
-
         this._stats.begin();
         
         this._draw();
         this._controls.update();
         
         this._stats.end();
-
     }
 
     _resize() {
@@ -174,6 +175,16 @@ class CanvasThreeComponent {
         window.addEventListener('resize', this._resizeHandler);
 
         TweenLite.ticker.addEventListener('tick', this._tickHandler);
+
+        window.addEventListener('mousewheel', this._wheelHandler);
+    }
+
+    _scrollManager(e) {
+        this._scene.position.x += e.deltaY * 0.05;
+    }
+
+    _wheelHandler(e) {
+        this._scrollManager(e);
     }
 
     _tickHandler() {
