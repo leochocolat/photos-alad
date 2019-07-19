@@ -59,7 +59,7 @@ class CanvasThreeComponent {
         this._camera.lookAt(0, 0, 0);
         this._renderer = new THREE.WebGLRenderer({
             canvas: this._canvas, 
-            antialias: false,
+            antialias: true,
             alpha: true
         });
         this._renderer.setClearColor(0xffffff, 0);
