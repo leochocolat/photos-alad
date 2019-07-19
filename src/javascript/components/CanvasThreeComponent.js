@@ -16,11 +16,13 @@ class CanvasThreeComponent {
         _.bindAll(
             this,
             '_tickHandler',
-            '_resizeHandler'
+            '_resizeHandler',
+            '_setupControls',
+            '_init'
         );
 
         this._settings = {
-            interval: 20,
+            interval: 30,
             controls: {
                 enabled: true,
                 zoomSpeed: 0.2,
@@ -32,14 +34,11 @@ class CanvasThreeComponent {
 
         const gui = new dat.GUI();
 
-        gui.add(this._settings, 'interval', 10, 50).step(1);
         gui.add(this._settings, 'allowCameraAnimation');
         gui.add(this._settings, 'animationSpeed', 1, 10,1).step(1);
-
-        let controlsFolder = gui.addFolder('controls');
-        controlsFolder.add(this._settings.controls, 'enabled');
-        controlsFolder.add(this._settings.controls, 'zoomSpeed', 0.1, 1).step(0.1);
-        controlsFolder.add(this._settings.controls, 'autoRotate');
+        gui.add(this._settings.controls, 'enabled').onChange(this._setupControls);
+        gui.add(this._settings.controls, 'zoomSpeed', 0.1, 1).step(0.1).onChange(this._setupControls);
+        gui.add(this._settings.controls, 'autoRotate').onChange(this._setupControls);
 
         this._canvas = document.querySelector('.js-canvas-component');
         this._delta = 0;
@@ -50,8 +49,8 @@ class CanvasThreeComponent {
     _init() {
         this._scene = new THREE.Scene();
         this._camera = new THREE.PerspectiveCamera(100, this._width/this._height, 1, 10000);    
-        this._camera.position.z = 300;
-        this._camera.lookAt(0, 0, 200);
+        this._camera.position.z = 20;
+        this._camera.lookAt(0, 0, 0);
         this._renderer = new THREE.WebGLRenderer({
             canvas: this._canvas, 
             antialias: false,
@@ -67,20 +66,16 @@ class CanvasThreeComponent {
 
 
     _loadTextures() {
-
         let path = './assets/images/';
         let promises = [];
         let texture;
         
         for (let i = 0; i < data.length; i++) {
-
             let image = `${path}${data[i].fileName}`;
-
             let promise = 
             new Promise(resolve => {
                 texture = new THREE.TextureLoader().load(image, resolve);
             });
-
             promises.push(promise);
         }
 
@@ -89,7 +84,6 @@ class CanvasThreeComponent {
             console.log()
             this._build();
         });
-
     }
 
     _build() {
@@ -101,11 +95,9 @@ class CanvasThreeComponent {
                 map: this._textures[i]
             });
             let plane = new THREE.Mesh(this._geometry, material);
-            plane.position.z = this._settings.interval * i;
+            plane.position.x = this._settings.interval * i;
             this._addMeshesToScene(plane);
         }
-
-        console.log(this._scene);
     }
 
     _setupLights() {
@@ -126,12 +118,12 @@ class CanvasThreeComponent {
     }
 
     _draw() {
-
         if (this._settings.allowCameraAnimation) {
             this._delta += this._settings.animationSpeed / 1000;
-            this._camera.position.z = 200 * Math.sin(this._delta);
+            this._camera.position.z = 200 * Math.cos(this._delta);
         }
 
+        // console.log(this._camera.position.z);
         this._renderer.render(this._scene, this._camera);
     }
 
@@ -140,12 +132,12 @@ class CanvasThreeComponent {
     }
 
     _addLightsToScene() {
-        this._scene.add(this._frontLight);
-        this._scene.add(this._backLight);
-        this._scene.add(this._leftLight);
-        this._scene.add(this._rightLight);
-        this._scene.add(this._bottomLight);
-        this._scene.add(this._topLight);
+        // this._scene.add(this._frontLight);
+        // this._scene.add(this._backLight);
+        // this._scene.add(this._leftLight);
+        // this._scene.add(this._rightLight);
+        // this._scene.add(this._bottomLight);
+        // this._scene.add(this._topLight);
     }
 
     _setupControls() {
