@@ -1,6 +1,7 @@
 //IMPORTS
 import _ from 'underscore';
 import {TweenMax, TimelineLite, TweenLite, Power0} from 'gsap/TweenMax';
+import Stats from 'stats.js';
 import Lerp from '../utils/Lerp.js';
 // EXAMPLE
 class CanvasComponent {
@@ -21,6 +22,10 @@ class CanvasComponent {
       scrollVelocityFactor: 0.5,
       marginFactor: 0.5
     }
+
+    this._stats = new Stats();
+    this._stats.showPanel(0);
+    document.body.appendChild(this._stats.dom);
 
     this._init();
   }
@@ -165,7 +170,11 @@ class CanvasComponent {
   }
 
   _tickHandler() {
+    this._stats.begin();
+    
     this._draw();
+    
+    this._stats.end();
   }
 
   _resizeHandler() {

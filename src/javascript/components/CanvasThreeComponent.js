@@ -3,6 +3,7 @@ import _ from 'underscore';
 import { TweenLite } from 'gsap/TweenLite';
 import * as THREE from 'three';
 import * as dat from 'dat.gui';
+import Stats from 'stats.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 // data
@@ -24,13 +25,17 @@ class CanvasThreeComponent {
         this._settings = {
             interval: 30,
             controls: {
-                enabled: true,
+                enabled: false,
                 zoomSpeed: 0.2,
                 autoRotate: false
             },
             allowCameraAnimation: false,
             animationSpeed: 1
         }
+
+        this._stats = new Stats();
+        this._stats.showPanel(0);
+        document.body.appendChild(this._stats.dom);
 
         const gui = new dat.GUI();
 
@@ -43,7 +48,6 @@ class CanvasThreeComponent {
         this._canvas = document.querySelector('.js-canvas-component');
         this._delta = 0;
         this._init();
-
     }
 
     _init() {
@@ -148,8 +152,14 @@ class CanvasThreeComponent {
     }
 
     _tick() {
+
+        this._stats.begin();
+        
         this._draw();
         this._controls.update();
+        
+        this._stats.end();
+
     }
 
     _resize() {
