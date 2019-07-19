@@ -186,7 +186,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var unde
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _components_CanvasThreeComponent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/CanvasThreeComponent.js */ \"./src/javascript/components/CanvasThreeComponent.js\");\n//IMPORTS\n// import CanvasComponent from './components/CanvasComponent.js';//CANVAS \n //THREE\n\n//# sourceURL=webpack:///./src/javascript/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _components_CanvasThreeComponent_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/CanvasThreeComponent.js */ \"./src/javascript/components/CanvasThreeComponent.js\");\n//IMPORTS\n// import CanvasComponent from './components/CanvasComponent.js';//CANVAS \n //THREE\n\n//# sourceURL=webpack:///./src/javascript/index.js?");
 
 /***/ })
 
