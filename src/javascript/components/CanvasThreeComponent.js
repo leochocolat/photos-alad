@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-import { TweenLite } from 'gsap/TweenLite';
+import {TweenMax, TimelineLite, TweenLite, Power0} from 'gsap/TweenMax';
 import * as THREE from 'three';
 import * as dat from 'dat.gui';
 import Stats from 'stats.js';
@@ -31,7 +31,8 @@ class CanvasThreeComponent {
                 autoRotate: false
             },
             allowCameraAnimation: false,
-            animationSpeed: 1
+            animationSpeed: 1,
+            scrollVelocityFactor: 0.04
         }
 
         this._stats = new Stats();
@@ -42,6 +43,7 @@ class CanvasThreeComponent {
 
         gui.add(this._settings, 'allowCameraAnimation');
         gui.add(this._settings, 'animationSpeed', 1, 10,1).step(1);
+        gui.add(this._settings, 'scrollVelocityFactor', 0.01, 0.20).step(0.001);
         gui.add(this._settings.controls, 'enabled').onChange(this._setupControls);
         gui.add(this._settings.controls, 'zoomSpeed', 0.1, 1).step(0.1).onChange(this._setupControls);
         gui.add(this._settings.controls, 'autoRotate').onChange(this._setupControls);
@@ -54,7 +56,7 @@ class CanvasThreeComponent {
     _init() {
         this._scene = new THREE.Scene();
         this._camera = new THREE.PerspectiveCamera(100, this._width/this._height, 1, 10000);    
-        this._camera.position.z = 20;
+        this._camera.position.z = 30;
         this._camera.position.x = -11;
         this._camera.lookAt(0, 0, 0);
         this._renderer = new THREE.WebGLRenderer({
@@ -66,7 +68,6 @@ class CanvasThreeComponent {
         this._setupEventListener();
         this._resize();
         this._loadTextures();
-        this._setupLights();
         this._setupControls();
     }
 
@@ -87,12 +88,12 @@ class CanvasThreeComponent {
 
         Promise.all(promises).then(result => {
             this._textures = result;
-            console.log()
             this._build();
         });
     }
 
     _build() {
+        this._planes = [];
         this._geometry = new THREE.PlaneGeometry(20, 25);
 
         for (let i = 0; i < data.length; i++) {
@@ -102,25 +103,22 @@ class CanvasThreeComponent {
             });
             let plane = new THREE.Mesh(this._geometry, material);
             plane.position.x = this._settings.interval * i;
+            this._planes.push(plane);
             this._addMeshesToScene(plane);
         }
     }
 
-    _setupLights() {
-        this._frontLight = new THREE.DirectionalLight(0xffffff, 1);
-        this._frontLight.position.set(0, 0, 1000);
-        this._backLight = new THREE.DirectionalLight(0xffffff, 1);
-        this._backLight.position.set(0, 0, -1000);
-        this._leftLight = new THREE.DirectionalLight(0xffffff, 1);
-        this._leftLight.position.set(-1000, 0, 0);
-        this._rightLight = new THREE.DirectionalLight(0xffffff, 1);
-        this._rightLight.position.set(1000, 0, 0);
-        this._bottomLight = new THREE.DirectionalLight(0xffffff, 1);
-        this._bottomLight.position.set(0, -1000, 0);
-        this._topLight = new THREE.DirectionalLight(0xffffff, 1);
-        this._topLight.position.set(0, 1000, 0);
+    _updateScrollPosition() {
+        if (!this._isScrolling) return;
 
-        this._addLightsToScene();
+        for (let i = 0; i < this._scene.children.length; i++) {
+            if (this._scene.children[i].type) {
+                this._scene.children[i].rotation.z += this._scrollVelocity * 0.1;
+                this._scene.children[i].position.x += this._scrollVelocity;
+            }
+        }
+        
+        // this._scene.position.x += this._scrollVelocity;
     }
 
     _draw() {
@@ -131,20 +129,15 @@ class CanvasThreeComponent {
             this._delta += this._settings.animationSpeed / 1000;
             this._camera.position.z = 200 * Math.cos(this._delta);
         }
+
+        this._updateScrollPosition();
+
         this._renderer.render(this._scene, this._camera);
     }
 
     _addMeshesToScene(mesh) {
         this._scene.add(mesh);
-    }
-
-    _addLightsToScene() {
-        // this._scene.add(this._frontLight);
-        // this._scene.add(this._backLight);
-        // this._scene.add(this._leftLight);
-        // this._scene.add(this._rightLight);
-        // this._scene.add(this._bottomLight);
-        // this._scene.add(this._topLight);
+        console.log(this._scene);
     }
 
     _setupControls() {
@@ -157,9 +150,11 @@ class CanvasThreeComponent {
     _tick() {
         this._stats.begin();
         
+
         this._draw();
         this._controls.update();
         
+
         this._stats.end();
     }
 
@@ -180,11 +175,29 @@ class CanvasThreeComponent {
     }
 
     _scrollManager(e) {
-        this._scene.position.x += e.deltaY * 0.05;
+        this._scrollVelocity = e.deltaY * this._settings.scrollVelocityFactor;
     }
 
     _wheelHandler(e) {
+
+        if (this._scrollTween) {
+            this._scrollTween.kill();
+        }
+
+        this._isScrolling = true;
+
         this._scrollManager(e);
+
+        clearTimeout(this._mouseWheelTimeout);
+        this._mouseWheelTimeout = setTimeout(() => {
+            this._wheelEndHandler();
+        }, 100);
+
+    }
+
+    _wheelEndHandler() {
+        //TODO: ADJUST TIMING WITH SCROLL VELOCITY
+        this._scrollTween = TweenMax.to(this, 0.3, { _scrollVelocity: 0, ease: Power0.easeNone });
     }
 
     _tickHandler() {
