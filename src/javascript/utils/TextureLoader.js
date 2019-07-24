@@ -10,7 +10,6 @@ class TextureLoader {
         }).then(() => {
             return texture;
         });
-
     }
 
 }
