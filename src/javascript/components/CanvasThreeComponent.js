@@ -20,7 +20,8 @@ class CanvasThreeComponent {
             '_resizeHandler',
             '_setupControls',
             '_init',
-            '_wheelHandler'
+            '_wheelHandler',
+            '_mousemoveHandler'
         );
 
         this._settings = {
@@ -54,10 +55,13 @@ class CanvasThreeComponent {
     }
 
     _init() {
+        this._raycaster = new THREE.Raycaster();
+        this._mouse = new THREE.Vector2();
+        this._INTERSECTED;
         this._scene = new THREE.Scene();
-        this._camera = new THREE.PerspectiveCamera(100, this._width/this._height, 1, 10000);    
-        this._camera.position.z = 30;
-        this._camera.position.x = -11;
+        this._camera = new THREE.PerspectiveCamera(50, this._width/this._height, 1, 10000);    
+        this._camera.position.z = 100;
+        // this._camera.position.x = -11;
         this._camera.lookAt(0, 0, 0);
         this._renderer = new THREE.WebGLRenderer({
             canvas: this._canvas, 
@@ -113,12 +117,19 @@ class CanvasThreeComponent {
 
         for (let i = 0; i < this._scene.children.length; i++) {
             if (this._scene.children[i].type) {
-                this._scene.children[i].rotation.z += this._scrollVelocity * 0.1;
                 this._scene.children[i].position.x += this._scrollVelocity;
             }
         }
-        
-        // this._scene.position.x += this._scrollVelocity;
+    }
+
+    _findIntersections() {
+        this._raycaster.setFromCamera(this._mouse, this._camera);
+        let intersect = this._raycaster.intersectObjects(this._scene.children);
+
+        if (intersect.length > 0) {
+            console.log(intersect[0].object);
+        }
+
     }
 
     _draw() {
@@ -131,6 +142,8 @@ class CanvasThreeComponent {
         }
 
         this._updateScrollPosition();
+
+        this._findIntersections();
 
         this._renderer.render(this._scene, this._camera);
     }
@@ -172,6 +185,8 @@ class CanvasThreeComponent {
         TweenLite.ticker.addEventListener('tick', this._tickHandler);
 
         window.addEventListener('mousewheel', this._wheelHandler);
+
+        document.addEventListener('mousemove', this._mousemoveHandler);
     }
 
     _scrollManager(e) {
@@ -198,6 +213,11 @@ class CanvasThreeComponent {
     _wheelEndHandler() {
         //TODO: ADJUST TIMING WITH SCROLL VELOCITY
         this._scrollTween = TweenMax.to(this, 0.3, { _scrollVelocity: 0, ease: Power0.easeNone });
+    }
+
+    _mousemoveHandler(e) {
+        this._mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        this._mouse.y = - (e.clientY / window.innerHeight) * 2 + 1;
     }
 
     _tickHandler() {
