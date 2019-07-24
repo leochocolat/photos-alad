@@ -12,7 +12,7 @@ class CanvasComponent {
       '_tickHandler',
       '_resizeHandler',
       '_mousemoveHandler',
-      '_mousewheelHandler'
+      '_wheelHandler'
     );
     
     this._canvas = document.querySelector('.js-canvas-component');
@@ -166,7 +166,7 @@ class CanvasComponent {
 
     window.addEventListener('mousemove', this._mousemoveHandler);
 
-    window.addEventListener('mousewheel', this._mousewheelHandler);
+    window.addEventListener('mousewheel', this._wheelHandler);
   }
 
   _tickHandler() {
@@ -181,7 +181,7 @@ class CanvasComponent {
     this._resize();
   }
 
-  _mousewheelHandler(e) {
+  _wheelHandler(e) {
     if (this._scrollTween) {
       this._scrollTween.kill();
     }
@@ -192,13 +192,14 @@ class CanvasComponent {
     
     clearTimeout(this._mouseWheelTimeout);
     this._mouseWheelTimeout = setTimeout(() => {
-      this._mousewheelEndHandler();
+      this._wheelEndHandler();
     }, 100);
 
   }
 
-  _mousewheelEndHandler() {
+  _wheelEndHandler() {
     //Ease end of scroll
+    //TODO: ADJUST TIMING WITH SCROLL VELOCITY
     this._scrollTween = TweenMax.to(this, 0.3, { _scrollVelocity: 0, ease: Power0.easeNone });
   }
 
