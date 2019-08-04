@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-import {TweenMax, TimelineLite, TweenLite, Power0} from 'gsap/TweenMax';
+import {TweenMax, TimelineLite, TweenLite, Power0, Power3} from 'gsap/TweenMax';
 import * as THREE from 'three';
 import * as dat from 'dat.gui';
 import Stats from 'stats.js';
@@ -31,6 +31,13 @@ class CanvasThreeComponent {
                 zoomSpeed: 0.2,
                 autoRotate: false
             },
+            camera: {
+                position: {
+                    x: 0,
+                    y: 0,
+                    z: 40
+                }
+            },
             allowCameraAnimation: false,
             animationSpeed: 1,
             scrollVelocityFactor: 0.04
@@ -49,6 +56,7 @@ class CanvasThreeComponent {
         gui.add(this._settings.controls, 'zoomSpeed', 0.1, 1).step(0.1).onChange(this._setupControls);
         gui.add(this._settings.controls, 'autoRotate').onChange(this._setupControls);
 
+
         this._canvas = document.querySelector('.js-canvas-component');
         this._delta = 0;
         this._init();
@@ -60,8 +68,9 @@ class CanvasThreeComponent {
         this._INTERSECTED;
         this._scene = new THREE.Scene();
         this._camera = new THREE.PerspectiveCamera(50, this._width/this._height, 1, 10000);    
-        this._camera.position.z = 100;
-        // this._camera.position.x = -11;
+        this._camera.position.x = this._settings.camera.position.x;
+        this._camera.position.y = this._settings.camera.position.y;
+        this._camera.position.z = this._settings.camera.position.z;
         this._camera.lookAt(0, 0, 0);
         this._renderer = new THREE.WebGLRenderer({
             canvas: this._canvas, 
@@ -103,13 +112,24 @@ class CanvasThreeComponent {
         for (let i = 0; i < data.length; i++) {
             let material = new THREE.MeshBasicMaterial({
                 side: THREE.DoubleSide,
-                map: this._textures[i]
+                map: this._textures[i],
+                transparent: true,
+                opacity: 0
             });
+            
             let plane = new THREE.Mesh(this._geometry, material);
             plane.position.x = this._settings.interval * i;
             this._planes.push(plane);
+
+            this._transitionIn(material);
+
             this._addMeshesToScene(plane);
         }
+
+    }
+
+    _transitionIn(material) {
+        TweenLite.to(material, 1, {opacity: 1, ease: Power3.easeInOut});
     }
 
     _updateScrollPosition() {
@@ -127,7 +147,6 @@ class CanvasThreeComponent {
         let intersect = this._raycaster.intersectObjects(this._scene.children);
 
         if (intersect.length > 0) {
-            console.log(intersect[0].object);
         }
 
     }
@@ -150,7 +169,6 @@ class CanvasThreeComponent {
 
     _addMeshesToScene(mesh) {
         this._scene.add(mesh);
-        console.log(this._scene);
     }
 
     _setupControls() {

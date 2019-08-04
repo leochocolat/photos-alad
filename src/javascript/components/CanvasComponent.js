@@ -3,6 +3,7 @@ import _ from 'underscore';
 import {TweenMax, TimelineLite, TweenLite, Power0} from 'gsap/TweenMax';
 import Stats from 'stats.js';
 import Lerp from '../utils/Lerp.js';
+import data from '../../assets/data/data.json';
 // EXAMPLE
 class CanvasComponent {
 
@@ -38,17 +39,23 @@ class CanvasComponent {
       y: this._height/2
     }
 
-    this._initRectanglePositions();
+    this._loadImages();
+  }
+  
+  _start() {
+    this._initPositions();
     this._setupEventListener();
   }
 
-  _initRectanglePositions() {
-    const number = 100;
+  _initPositions() {
+    const number = 6;
     const width = 300;
     const height = 400;
     const margin = 50;
     
     this._rectangles = [];
+    this._imgCollection = [];
+
     for (let i = 0; i <= number; i++) {
       let rectangle = {
         width: width,
@@ -58,9 +65,42 @@ class CanvasComponent {
           y: (this._height / 2) - (height / 2)
         }
       }
-      this._rectangles.push(rectangle)
+      let aspectRatio = this._images[i].width / this._images[i].height
+      let img = {
+        width: width,
+        height: width / aspectRatio,
+        position: {
+          x: (width * i) - (width / 2) +  i * margin,
+          y: (this._height / 2) - ((width / aspectRatio) / 2)
+        }
+      }
+      this._rectangles.push(rectangle);
+      this._imgCollection.push(img);
+    }
+  }
+
+  _loadImages() {
+    let path = './assets/images/';
+    let promises = [];
+    let img;
+    
+    for (let i = 0; i < data.length; i++) {
+        let url = `${path}${data[i].fileName}`;
+        img = new Image();
+        img.src = url;
+        let promise = new Promise((resolve, reject) => {
+          img.addEventListener('load', resolve(img));
+          img.addEventListener('error', () => {
+            reject(new Error(`Failed to load image's URL: ${url}`));
+          });
+        });
+        promises.push(promise);
     }
 
+    Promise.all(promises).then(result => {
+        this._images = result;  
+        this._start();      
+    });
   }
 
   _createCursor() {
@@ -70,6 +110,7 @@ class CanvasComponent {
     this._ctx.strokeStyle = 'white';
     this._ctx.lineWidth = 1;
 
+    
     this._ctx.beginPath();
     this._ctx.arc(this._cursorPostion.x, this._cursorPostion.y, radius, 0, 2 * Math.PI);
     this._ctx.stroke();
@@ -78,7 +119,6 @@ class CanvasComponent {
   }
   
   _createRectangles() {
-    
     this._gradient = this._ctx.createLinearGradient(0, 0, this._width, 0);
     this._gradient.addColorStop(0, '#7ff7ad');
     this._gradient.addColorStop(0.5, '#629df8');
@@ -89,8 +129,11 @@ class CanvasComponent {
       this._ctx.fillStyle = this._gradient;
       this._ctx.fillRect(this._rectangles[i].position.x, this._rectangles[0].position.y, this._rectangles[i].width, this._rectangles[i].height );
       this._ctx.closePath();
+      this._ctx.beginPath();
+      this._ctx.drawImage(this._images[i], this._imgCollection[i].position.x, this._imgCollection[0].position.y, this._imgCollection[i].width, this._imgCollection[i].height );
+      this._ctx.closePath();
     }
-
+    
   } 
 
   _createActiveRectangle() {
@@ -99,17 +142,18 @@ class CanvasComponent {
     const index = this._activeRectangle;
 
     this._ctx.beginPath();
-    this._ctx.strokeStyle = 'blue';
+    this._ctx.strokeStyle = 'transparent';
     this._ctx.rect(this._rectangles[index].position.x, this._rectangles[index].position.y, this._rectangles[index].width, this._rectangles[index].height);
     this._ctx.stroke();
     this._ctx.closePath();
   }
 
-  _updateRectanglesPositions() {
+  _updatePositions() {
     if (!this._isScrolling) return;
 
     for (let i = 0; i < this._rectangles.length; i++) {
       this._rectangles[i].position.x += this._scrollVelocity;
+      this._imgCollection[i].position.x += this._scrollVelocity;
     }
   }
 
@@ -130,12 +174,12 @@ class CanvasComponent {
   _draw() {
     this._ctx.clearRect(0, 0, this._width, this._height);
     this._createRectangles();
-    
+    // this._ctx.globalCompositeOperation = 'destination-out';
     this._createCursor();
     
     this._updateCursorPosition();
     
-    this._updateRectanglesPositions();
+    this._updatePositions();
 
     this._createActiveRectangle();
   }
