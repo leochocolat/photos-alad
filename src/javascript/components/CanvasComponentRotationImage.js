@@ -3,7 +3,7 @@ import _ from 'underscore';
 import {TweenMax, TimelineLite, TweenLite, Power0} from 'gsap/TweenMax';
 import Stats from 'stats.js';
 import Lerp from '../utils/Lerp.js';
-import data from '../../assets/data/data.json';
+import data from '../../assets/data/introImages.json';
 // EXAMPLE
 class CanvasComponent {
 
@@ -20,7 +20,7 @@ class CanvasComponent {
     this._ctx = this._canvas.getContext('2d');
 
     this._settings = {
-      scrollVelocityFactor: 0.5,
+      scrollVelocityFactor: 0.001,
       marginFactor: 0.5
     }
 
@@ -43,7 +43,7 @@ class CanvasComponent {
   }
   
   _start() {
-    this._initPositions();
+    this._initAngles();
     this._setupEventListener();
   }
 
@@ -71,85 +71,42 @@ class CanvasComponent {
     });
   }
 
-  _initPositions() {
-    const number = 6;
-    const width = 300;
-    const height = 400;
-    const margin = 50;
-    
-    this._rectangles = [];
-    this._imgCollection = [];
-
-    this._rotationAngles = []; 
-    let limit = 10;
-
-    for (let i = 0; i < limit; i++) {
-      let value = i/limit;
-      let angle = value * Math.PI * 2;
-      this._rotationAngles.push(angle);
-    }
-
-    for (let i = 0; i <= number; i++) {
-      let rectangle = {
-        width: width,
-        height: height,
-        position: {
-          x: (width * i) - (width / 2) +  i * margin,
-          y: (this._height / 2) - (height / 2)
-        }
+  _initAngles() {
+      this._rotationAngles = []; 
+      let limit = data.length;
+      for (let i = 0; i < limit; i++) {
+        let value = i/limit;
+        let angle = value * Math.PI * 2;
+        this._rotationAngles.push(angle);
       }
+  }
+
+  _drawCircle() {    
+    let limit = 10;
+    let radius = 300;
+    let width = 350;
+    
+    for (let i = 0; i < data.length; i++) {
+      let posX = (Math.cos(this._rotationAngles[i]) * radius/1) + (this._width/2);
+      let posY = (Math.sin(this._rotationAngles[i]) * radius/1) + (this._height/0.9);
+
       let aspectRatio = this._images[i].width / this._images[i].height
       let img = {
         width: width,
         height: width / aspectRatio,
-        position: {
-          x: (width * i) - (width / 2) +  i * margin,
-          y: (this._height / 2) - ((width / aspectRatio) / 2)
-        }
       }
-      this._rectangles.push(rectangle);
-      this._imgCollection.push(img);
+      
+      this._ctx.setTransform(1, 0, 0, 1, posX, posY); 
+
+      this._ctx.rotate(Math.cos(this._rotationAngles[i]));
+
+      this._ctx.drawImage(this._images[i], -img.width/2, -img.height/2, img.width, img.height);
+
+      this._ctx.setTransform(1, 0, 0, 1, 0, 0);
+
     }
   }
 
-  //WORKING EXAMPLE DESTINATION-IN
-  _testGCP() {
-    this._gradient = this._ctx.createLinearGradient(0, 0, this._width, 0);
-    this._gradient.addColorStop(0, '#7ff7ad');
-    this._gradient.addColorStop(0.5, '#629df8');
-    this._gradient.addColorStop(1, '#d32daf');
-
-    this._ctx.fillStyle = this._gradient;
-    this._ctx.fillRect(this._rectangles[2].position.x, this._rectangles[0].position.y, this._rectangles[2].width, this._rectangles[2].height );
-
-    this._ctx.fillStyle = 'black';
-    this._ctx.beginPath();
-    this._ctx.arc(this._rectangles[2].position.x + 100, this._rectangles[0].position.y + 100, 100, 0 ,2 * Math.PI );
-    this._ctx.fill();
-    this._ctx.closePath();
-
-    this._ctx.globalCompositeOperation = 'source-over';
-  }
-  
-  _createStuff() {
-    this._gradient = this._ctx.createLinearGradient(0, 0, this._width, 0);
-    this._gradient.addColorStop(0, '#7ff7ad');
-    this._gradient.addColorStop(0.5, '#629df8');
-    this._gradient.addColorStop(1, '#d32daf');
-    
-    for (let i = 0; i < this._rectangles.length; i++) {
-      // draw clip
-      this._ctx.beginPath();
-      this._ctx.fillStyle = this._gradient;
-      this._ctx.fillRect(this._rectangles[i].position.x, this._rectangles[0].position.y, this._rectangles[i].width, this._rectangles[i].height );
-      this._ctx.closePath();
-
-      //draw image
-      this._ctx.beginPath();
-      this._ctx.drawImage(this._images[i], this._imgCollection[i].position.x, this._imgCollection[0].position.y, this._imgCollection[i].width, this._imgCollection[i].height);
-      this._ctx.closePath();  
-    }
-  } 
 
   _createCursor() {
     const radius = 20;
@@ -164,26 +121,12 @@ class CanvasComponent {
     this._ctx.fill();
     this._ctx.closePath();
   }
-  
-
-  _createActiveRectangle() {
-    if(!this._activeRectangle) return;
-
-    const index = this._activeRectangle;
-
-    this._ctx.beginPath();
-    this._ctx.strokeStyle = 'transparent';
-    this._ctx.rect(this._rectangles[index].position.x, this._rectangles[index].position.y, this._rectangles[index].width, this._rectangles[index].height);
-    this._ctx.stroke();
-    this._ctx.closePath();
-  }
 
   _updatePositions() {
     if (!this._isScrolling) return;
 
-    for (let i = 0; i < this._rectangles.length; i++) {
-      this._rectangles[i].position.x += this._scrollVelocity;
-      this._imgCollection[i].position.x += this._scrollVelocity;
+    for (let i = 0; i < this._rotationAngles.length; i++) {
+      this._rotationAngles[i] += this._scrollVelocity;
     }
   }
 
@@ -200,17 +143,16 @@ class CanvasComponent {
       };
   }
 
+
   _draw() {
     this._ctx.clearRect(0, 0, this._width, this._height);
     
-    this._createStuff();
+    this._drawCircle();
 
     this._createCursor();
     this._updateCursorPosition();
     
     this._updatePositions();
-
-    this._createActiveRectangle();
   }
 
   _resize() {
@@ -219,17 +161,6 @@ class CanvasComponent {
 
     this._canvas.width = this._width;
     this._canvas.height = this._height;
-  }
-
-  _hitDetection(e) {
-    const posX = e.clientX;
-    const posY = e.clientY;
-
-    for (let i = 0; i < this._rectangles.length; i++) {
-      if ( posX > this._rectangles[i].position.x && posX < this._rectangles[i].position.x + this._rectangles[i].width && posY > this._rectangles[i].position.y && posY < this._rectangles[i].position.y + this._rectangles[i].height ) {
-        this._activeRectangle = i;
-      }
-    }
   }
 
   _setupEventListener() {
@@ -267,6 +198,7 @@ class CanvasComponent {
     this._mouseWheelTimeout = setTimeout(() => {
       this._wheelEndHandler();
     }, 100);
+
   }
 
   _wheelEndHandler() {
@@ -280,8 +212,9 @@ class CanvasComponent {
       x: e.clientX,
       y: e.clientY
     }
-    this._hitDetection(e);
   }
+
 }
+
 
 export default new CanvasComponent();
