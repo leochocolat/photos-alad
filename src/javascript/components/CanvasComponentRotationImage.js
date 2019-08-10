@@ -1,7 +1,8 @@
 //IMPORTS
 import _ from 'underscore';
-import {TweenMax, TimelineLite, TweenLite, Power0} from 'gsap/TweenMax';
+import {TweenMax, TimelineLite, TweenLite, Power0, Power3} from 'gsap/TweenMax';
 import Stats from 'stats.js';
+import * as dat from 'dat.gui';
 import Lerp from '../utils/Lerp.js';
 import data from '../../assets/data/introImages.json';
 // EXAMPLE
@@ -21,12 +22,36 @@ class CanvasComponent {
 
     this._settings = {
       scrollVelocityFactor: 0.001,
-      marginFactor: 0.5
+      marginFactor: 0.5,
+      circle: {
+        translateOrigin: {
+          x: 0,
+          y: 0
+        },
+        radius: 300,
+      },
+      images: {
+        width: 350
+      }
+    }
+
+    this._tweenValues = {
+      opacity: 0,
+      rotationDelta: 0
     }
 
     this._stats = new Stats();
     this._stats.showPanel(0);
     document.body.appendChild(this._stats.dom);
+
+    const gui = new dat.GUI();
+
+    gui.add(this._settings, 'scrollVelocityFactor', 0.0001, 0.01).step(0.00005);
+    gui.add(this._settings.circle.translateOrigin, 'x', -1000, 1000).step(10);
+    gui.add(this._settings.circle.translateOrigin, 'y', -1000, 1000).step(10);
+    gui.add(this._settings.circle, 'radius', 100, 1000).step(5);
+    gui.add(this._settings.images, 'width', 100, 1000).step(5);
+
 
     this._init();
   }
@@ -45,6 +70,7 @@ class CanvasComponent {
   _start() {
     this._initAngles();
     this._setupEventListener();
+    this._setupTweens();  
   }
 
   _loadImages() {
@@ -82,19 +108,28 @@ class CanvasComponent {
   }
 
   _drawCircle() {    
-    let limit = 10;
-    let radius = 300;
-    let width = 350;
+    let radius = this._settings.circle.radius;
+
+    let width = this._settings.images.width;
+
+    let circleOrigin = {
+      x: (this._width/2),
+      y: (this._height/0.9)
+    };
     
+    let translateOrigin = this._settings.circle.translateOrigin;
+
     for (let i = 0; i < data.length; i++) {
-      let posX = (Math.cos(this._rotationAngles[i]) * radius/1) + (this._width/2);
-      let posY = (Math.sin(this._rotationAngles[i]) * radius/1) + (this._height/0.9);
+      let posX = (Math.cos(this._rotationAngles[i]) * radius/1) + circleOrigin.x + translateOrigin.x;
+      let posY = (Math.sin(this._rotationAngles[i]) * radius/1) + circleOrigin.y + translateOrigin.y;
 
       let aspectRatio = this._images[i].width / this._images[i].height
       let img = {
         width: width,
         height: width / aspectRatio,
       }
+
+      this._ctx.globalAlpha = this._tweenValues.opacity;
       
       this._ctx.setTransform(1, 0, 0, 1, posX, posY); 
 
@@ -107,6 +142,13 @@ class CanvasComponent {
     }
   }
 
+  _setupTweens() {
+    let timeline = new TimelineLite();
+
+    timeline.to(this._tweenValues, 0.5, {rotationDelta: -0.045, ease: Power0.easeNone}, 1);
+    timeline.to(this._tweenValues, 1, {opacity: 1, delay: 0.5, ease: Power3.easeInOut}, 1);
+    timeline.to(this._tweenValues, 1.5, {rotationDelta: 0, ease: Power2.easeOut});
+  }
 
   _createCursor() {
     const radius = 20;
@@ -120,6 +162,12 @@ class CanvasComponent {
     this._ctx.stroke();
     this._ctx.fill();
     this._ctx.closePath();
+  }
+
+  _animatePositions() {
+    for (let i = 0; i < this._rotationAngles.length; i++) {
+      this._rotationAngles[i] += this._tweenValues.rotationDelta;
+    }
   }
 
   _updatePositions() {
@@ -153,6 +201,7 @@ class CanvasComponent {
     this._updateCursorPosition();
     
     this._updatePositions();
+    this._animatePositions();
   }
 
   _resize() {
