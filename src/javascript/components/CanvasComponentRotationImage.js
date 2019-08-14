@@ -132,13 +132,13 @@ class CanvasComponent {
       this._ctx.globalAlpha = this._tweenValues.opacity;
       
       this._ctx.setTransform(1, 0, 0, 1, posX, posY); 
-
+      
+      //TODO: Correct angle 
       this._ctx.rotate(Math.cos(this._rotationAngles[i]));
-
+      
       this._ctx.drawImage(this._images[i], -img.width/2, -img.height/2, img.width, img.height);
-
+      
       this._ctx.setTransform(1, 0, 0, 1, 0, 0);
-
     }
   }
 
@@ -196,7 +196,7 @@ class CanvasComponent {
     this._ctx.clearRect(0, 0, this._width, this._height);
     
     this._drawCircle();
-
+    
     this._createCursor();
     this._updateCursorPosition();
     
