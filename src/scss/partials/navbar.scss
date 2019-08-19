@@ -1,0 +1,40 @@
+.navbar {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    width: 100%;
+    margin: auto;
+
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar__left {
+    display: inline-block
+}
+
+.navbar__item {
+    display: inline-block;
+}
+
+.navbar__title {
+    position: relative;
+
+    margin-right: 70px;
+
+    &:after {
+        content: '';
+
+        position: absolute;
+        left: calc(100% + 16px);
+        top: 53%;
+
+        width: 40px;
+        height: 1.4px;
+
+        background-color: black;
+    }
+}

@@ -1,0 +1,21 @@
+$mq-regular: 1200px;
+$mq-narrow: 800px;
+$mq-extra-narrow: 500px;
+
+@mixin mq-regular {
+    @media screen and (min-width: $mq-regular) {
+        @content;
+    }
+}
+
+@mixin mq-narrow {
+    @media screen and (max-width: $mq-narrow) {
+        @content;
+    }
+}
+
+@mixin mq-narrow {
+    @media screen and (max-width: $mq-extra-narrow) {
+        @content;
+    }
+}

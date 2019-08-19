@@ -5,7 +5,7 @@ import Stats from 'stats.js';
 import Lerp from '../utils/Lerp.js';
 // import CursorComponent from './CursorComponent';
 import ScrollModule from '../modules/ScrollModule';
-import data from '../../assets/data/data.json';
+import data from '../../assets/data/introImages.json';
 
 
 class PixiComponent {
@@ -17,7 +17,8 @@ class PixiComponent {
             '_resizeHandler',
             '_mousemoveHandler',
             '_wheelHandler',
-            '_wheelEndHandler'
+            '_wheelEndHandler',
+            '_onLoadHandler'
         );
 
         this.ui = {
@@ -45,13 +46,16 @@ class PixiComponent {
             y: 0
         }
 
+        this._stats = new Stats();
+        this._stats.showPanel(0);
+        document.body.appendChild(this._stats.dom);
+
         this._setup();
     }
 
     _setup() {
         this._resize();
         this._build();
-        this._setupEventListener();
     }
 
     _build() {
@@ -59,7 +63,8 @@ class PixiComponent {
             view: this.ui.canvas,
             width: this._width,
             height: this._height,
-            transparent: true
+            transparent: true,
+            antialias: true
         });
 
         this._canvas = this._app.view;
@@ -67,65 +72,96 @@ class PixiComponent {
         this._stage = this._app.stage;
         this._stage.addChild(this._container);
 
-        this._createLayers();
+        this._loadAssets();
+    }
+
+    _loadAssets() {
+        const path = '../../assets/images/';
+        this._loader = new PIXI.loaders.Loader();
+
+        for (let i = 0; i < data.length; i++) {
+            this._loader.add(data[i].fileName, `${path}${data[i].fileName}`);
+        }
+
+        this._loader.load(this._onLoadHandler);
+    }
+    
+    _start() {
+        
         this._initAngles();
         this._initPositions();
+        this._initSprites();
+
+        this._createLayers();
+
+        this._createSprites();
+
+        this._setupEventListener();
+    }
+
+    _initAngles() {
+        const limit = data.length;
+
+        this._rotationAngles = [];
+
+        for (let i = 0; i < limit; i++) {
+            let value = i/limit;
+            let angle = value * (Math.PI * 2);
+            this._rotationAngles.push(angle);
+        }
+    }
+
+    _initPositions() {
+        this._positions = [];
+        for (let i = 0; i < this._rotationAngles.length; i++) {
+            let posX = this._center.x +  Math.cos(this._rotationAngles[i]) * this._settings.radius;
+            let posY = this._center.y + Math.sin(this._rotationAngles[i]) * this._settings.radius;
+
+            let position = {
+                x: posX,
+                y: posY
+            }
+
+            this._positions.push(position);
+        }
+    }
+
+    _initSprites() {
+        let width = 320;
+        
+        this._sprites = [];
+
+        for (let i = 0; i < data.length; i++) {
+            let sprite = new PIXI.Sprite(this._loader.resources[data[i].fileName].texture);
+
+            let ratio = sprite.width / sprite.height;
+            
+            sprite.width = width;
+            sprite.height = width / ratio;
+            this._sprites.push(sprite);
+        }
+    }
+
+    _createSprites() {
+        for (let i = 0; i < this._sprites.length; i++) {
+            
+            let container = new PIXI.Container();
+            container.addChild(this._sprites[i]);
+
+            container.position.x = this._positions[i].x;
+            container.position.y = this._positions[i].y;
+            container.pivot.x = container.width/2;
+            container.pivot.y = container.height/2;
+            container.rotation = this._rotationAngles[i] + (Math.PI/2);
+
+            this._imagesLayer.addChild(container);
+        }
     }
 
     _createLayers() {
         this._imagesLayer = new PIXI.Container();
 
         this._container.addChild(this._imagesLayer);
-    }
-
-    _initAngles() {
-        const limit = 20;
-
-        this._rotationAngles = [];
-
-        for (let i = 0; i < limit; i++) {
-            let value = i/limit;
-            let angle = value * Math.PI * 2;
-            this._rotationAngles.push(angle);
-        }
-    }
-
-    _initPositions() {
-        this._rectanglePositions = [];
-
-        for (let i = 0; i < this._rotationAngles.length; i++) {
-            let posX = (this._width/2) +  Math.cos(this._rotationAngles[i]) * this._settings.radius;
-            let posY = (this._height/2) + Math.sin(this._rotationAngles[i]) * this._settings.radius;
-
-            let rectanglePosition = {
-                x: posX,
-                y: posY
-            }
-
-            this._rectanglePositions.push(rectanglePosition);
-        }
-    }
-
-    _createRectangles() {
-        for (let i = 0; i < this._rectanglePositions.length; i++) {
-            let container = new PIXI.Container(); 
-
-            const width = 50;
-            const height = 100;
-            const color = '0x0000ff';
-
-            let graphics = new PIXI.Graphics();
-            graphics.beginFill(color);
-            graphics.drawRect(0, 0, width, height);
-
-            container.addChild(graphics);
-            container.position.x = this._rectanglePositions[i].x;
-            container.position.y = this._rectanglePositions[i].y;
-            container.pivot.x = container.width/2;
-            container.pivot.y = container.height/2;
-            container.rotation = this._rotationAngles[i];
-            this._imagesLayer.addChild(container);
-        }
     }
 
     _updateAngles() {
@@ -135,19 +171,20 @@ class PixiComponent {
     }
 
     _updatePositions() {
-        for (let i = 0; i < this._rectanglePositions.length; i++) {
-            let posX = (this._width/2) +  Math.cos(this._rotationAngles[i]) * this._settings.radius;
-            let posY = (this._height/2) + Math.sin(this._rotationAngles[i]) * this._settings.radius;
+        for (let i = 0; i < this._positions.length; i++) {
+            let posX = this._center.x + Math.cos(this._rotationAngles[i]) * this._settings.radius;
+            let posY = this._center.y + Math.sin(this._rotationAngles[i]) * this._settings.radius;
 
-            this._rectanglePositions[i].x = posX; 
-            this._rectanglePositions[i].y = posY;
+            this._positions[i].x = posX; 
+            this._positions[i].y = posY;
         }
     }
 
     _tick() {
         this._clearLayers();
 
-        this._createRectangles();
+        this._createSprites();
+
         this._updateScrollPosition();
         this._updateAngles();
         this._updatePositions();
@@ -182,10 +219,23 @@ class PixiComponent {
     _resize() {
         this._width = window.innerWidth;
         this._height = window.innerHeight;
+
+        this._center = {
+            x: this._width / 2,
+            y: this._height * 1.1,
+        }
     }
 
     _tickHandler() {
+        this._stats.begin();//STATS
+
         this._tick();
+
+        this._stats.end();//STATS
+    }
+
+    _onLoadHandler(loader, resources) {
+        this._start();
     }
 
     _resizeHandler() {

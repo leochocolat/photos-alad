@@ -1,0 +1,363 @@
+@font-face {
+    font-family: 'Schnyder Cond L';
+    src: url('../assets/fonts/SchnyderCondLLight.eot');
+    src: url('../assets/fonts/SchnyderCondLLight.eot?#iefix') format('embedded-opentype'),
+        url('../assets/fonts/SchnyderCondLLight.woff2') format('woff2'),
+        url('../assets/fonts/SchnyderCondLLight.woff') format('woff'),
+        url('../assets/fonts/SchnyderCondLLight.ttf') format('truetype'),
+        url('../assets/fonts/SchnyderCondLLight.svg#SchnyderCondLLight') format('svg');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600&display=swap');
+
+// @font-face {
+//     font-family: 'Schnyder X Cond XL';
+//     src: url('../assets/fonts/SchnyderXCondXLLight.eot');
+//     src: url('../assets/fonts/SchnyderXCondXLLight.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderXCondXLLight.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderXCondXLLight.woff') format('woff'),
+//         url('../assets/fonts/SchnyderXCondXLLight.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderXCondXLLight.svg#SchnyderXCondXLLight') format('svg');
+//     font-weight: 300;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Wide L Demi';
+//     src: url('../assets/fonts/SchnyderWideLDemi.eot');
+//     src: url('../assets/fonts/SchnyderWideLDemi.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderWideLDemi.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderWideLDemi.woff') format('woff'),
+//         url('../assets/fonts/SchnyderWideLDemi.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderWideLDemi.svg#SchnyderWideLDemi') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Cond S';
+//     src: url('../assets/fonts/SchnyderCondSLight.eot');
+//     src: url('../assets/fonts/SchnyderCondSLight.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderCondSLight.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderCondSLight.woff') format('woff'),
+//         url('../assets/fonts/SchnyderCondSLight.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderCondSLight.svg#SchnyderCondSLight') format('svg');
+//     font-weight: 300;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Cond S';
+//     src: url('../assets/fonts/SchnyderCondSBold.eot');
+//     src: url('../assets/fonts/SchnyderCondSBold.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderCondSBold.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderCondSBold.woff') format('woff'),
+//         url('../assets/fonts/SchnyderCondSBold.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderCondSBold.svg#SchnyderCondSBold') format('svg');
+//     font-weight: bold;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Cond S Demi';
+//     src: url('../assets/fonts/SchnyderCondSDemi.eot');
+//     src: url('../assets/fonts/SchnyderCondSDemi.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderCondSDemi.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderCondSDemi.woff') format('woff'),
+//         url('../assets/fonts/SchnyderCondSDemi.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderCondSDemi.svg#SchnyderCondSDemi') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Wide S';
+//     src: url('../assets/fonts/SchnyderWideSBold.eot');
+//     src: url('../assets/fonts/SchnyderWideSBold.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderWideSBold.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderWideSBold.woff') format('woff'),
+//         url('../assets/fonts/SchnyderWideSBold.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderWideSBold.svg#SchnyderWideSBold') format('svg');
+//     font-weight: bold;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder X Cond L';
+//     src: url('../assets/fonts/SchnyderXCondLBold.eot');
+//     src: url('../assets/fonts/SchnyderXCondLBold.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderXCondLBold.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderXCondLBold.woff') format('woff'),
+//         url('../assets/fonts/SchnyderXCondLBold.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderXCondLBold.svg#SchnyderXCondLBold') format('svg');
+//     font-weight: bold;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder X Cond XL Demi';
+//     src: url('../assets/fonts/SchnyderXCondXLDemi.eot');
+//     src: url('../assets/fonts/SchnyderXCondXLDemi.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderXCondXLDemi.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderXCondXLDemi.woff') format('woff'),
+//         url('../assets/fonts/SchnyderXCondXLDemi.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderXCondXLDemi.svg#SchnyderXCondXLDemi') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Wide S';
+//     src: url('../assets/fonts/SchnyderWideSLight.eot');
+//     src: url('../assets/fonts/SchnyderWideSLight.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderWideSLight.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderWideSLight.woff') format('woff'),
+//         url('../assets/fonts/SchnyderWideSLight.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderWideSLight.svg#SchnyderWideSLight') format('svg');
+//     font-weight: 300;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Wide L';
+//     src: url('../assets/fonts/SchnyderWideLBold.eot');
+//     src: url('../assets/fonts/SchnyderWideLBold.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderWideLBold.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderWideLBold.woff') format('woff'),
+//         url('../assets/fonts/SchnyderWideLBold.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderWideLBold.svg#SchnyderWideLBold') format('svg');
+//     font-weight: bold;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Cond L';
+//     src: url('../assets/fonts/SchnyderCondLBold.eot');
+//     src: url('../assets/fonts/SchnyderCondLBold.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderCondLBold.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderCondLBold.woff') format('woff'),
+//         url('../assets/fonts/SchnyderCondLBold.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderCondLBold.svg#SchnyderCondLBold') format('svg');
+//     font-weight: bold;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder X Cond L Demi';
+//     src: url('../assets/fonts/SchnyderXCondLDemi.eot');
+//     src: url('../assets/fonts/SchnyderXCondLDemi.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderXCondLDemi.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderXCondLDemi.woff') format('woff'),
+//         url('../assets/fonts/SchnyderXCondLDemi.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderXCondLDemi.svg#SchnyderXCondLDemi') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Wide XL';
+//     src: url('../assets/fonts/SchnyderWideXLLight.eot');
+//     src: url('../assets/fonts/SchnyderWideXLLight.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderWideXLLight.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderWideXLLight.woff') format('woff'),
+//         url('../assets/fonts/SchnyderWideXLLight.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderWideXLLight.svg#SchnyderWideXLLight') format('svg');
+//     font-weight: 300;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Cond M';
+//     src: url('../assets/fonts/SchnyderCondMLight.eot');
+//     src: url('../assets/fonts/SchnyderCondMLight.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderCondMLight.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderCondMLight.woff') format('woff'),
+//         url('../assets/fonts/SchnyderCondMLight.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderCondMLight.svg#SchnyderCondMLight') format('svg');
+//     font-weight: 300;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Wide M Demi';
+//     src: url('../assets/fonts/SchnyderWideMDemi.eot');
+//     src: url('../assets/fonts/SchnyderWideMDemi.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderWideMDemi.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderWideMDemi.woff') format('woff'),
+//         url('../assets/fonts/SchnyderWideMDemi.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderWideMDemi.svg#SchnyderWideMDemi') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+
+// @font-face {
+//     font-family: 'Schnyder Cond M Demi';
+//     src: url('../assets/fonts/SchnyderCondMDemi.eot');
+//     src: url('../assets/fonts/SchnyderCondMDemi.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderCondMDemi.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderCondMDemi.woff') format('woff'),
+//         url('../assets/fonts/SchnyderCondMDemi.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderCondMDemi.svg#SchnyderCondMDemi') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Wide XL';
+//     src: url('../assets/fonts/SchnyderWideXLBold.eot');
+//     src: url('../assets/fonts/SchnyderWideXLBold.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderWideXLBold.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderWideXLBold.woff') format('woff'),
+//         url('../assets/fonts/SchnyderWideXLBold.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderWideXLBold.svg#SchnyderWideXLBold') format('svg');
+//     font-weight: bold;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Cond XL';
+//     src: url('../assets/fonts/SchnyderCondXLLight.eot');
+//     src: url('../assets/fonts/SchnyderCondXLLight.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderCondXLLight.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderCondXLLight.woff') format('woff'),
+//         url('../assets/fonts/SchnyderCondXLLight.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderCondXLLight.svg#SchnyderCondXLLight') format('svg');
+//     font-weight: 300;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder X Cond L';
+//     src: url('../assets/fonts/SchnyderXCondLLight.eot');
+//     src: url('../assets/fonts/SchnyderXCondLLight.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderXCondLLight.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderXCondLLight.woff') format('woff'),
+//         url('../assets/fonts/SchnyderXCondLLight.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderXCondLLight.svg#SchnyderXCondLLight') format('svg');
+//     font-weight: 300;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder X Cond XL';
+//     src: url('../assets/fonts/SchnyderXCondXLBold.eot');
+//     src: url('../assets/fonts/SchnyderXCondXLBold.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderXCondXLBold.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderXCondXLBold.woff') format('woff'),
+//         url('../assets/fonts/SchnyderXCondXLBold.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderXCondXLBold.svg#SchnyderXCondXLBold') format('svg');
+//     font-weight: bold;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Wide XL Demi';
+//     src: url('../assets/fonts/SchnyderWideXLDemi.eot');
+//     src: url('../assets/fonts/SchnyderWideXLDemi.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderWideXLDemi.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderWideXLDemi.woff') format('woff'),
+//         url('../assets/fonts/SchnyderWideXLDemi.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderWideXLDemi.svg#SchnyderWideXLDemi') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Wide M';
+//     src: url('../assets/fonts/SchnyderWideMLight.eot');
+//     src: url('../assets/fonts/SchnyderWideMLight.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderWideMLight.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderWideMLight.woff') format('woff'),
+//         url('../assets/fonts/SchnyderWideMLight.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderWideMLight.svg#SchnyderWideMLight') format('svg');
+//     font-weight: 300;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Cond L Demi';
+//     src: url('../assets/fonts/SchnyderCondLDemi.eot');
+//     src: url('../assets/fonts/SchnyderCondLDemi.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderCondLDemi.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderCondLDemi.woff') format('woff'),
+//         url('../assets/fonts/SchnyderCondLDemi.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderCondLDemi.svg#SchnyderCondLDemi') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Cond XL Demi';
+//     src: url('../assets/fonts/SchnyderCondXLDemi.eot');
+//     src: url('../assets/fonts/SchnyderCondXLDemi.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderCondXLDemi.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderCondXLDemi.woff') format('woff'),
+//         url('../assets/fonts/SchnyderCondXLDemi.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderCondXLDemi.svg#SchnyderCondXLDemi') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Cond XL';
+//     src: url('../assets/fonts/SchnyderCondXLBold.eot');
+//     src: url('../assets/fonts/SchnyderCondXLBold.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderCondXLBold.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderCondXLBold.woff') format('woff'),
+//         url('../assets/fonts/SchnyderCondXLBold.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderCondXLBold.svg#SchnyderCondXLBold') format('svg');
+//     font-weight: bold;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Wide M';
+//     src: url('../assets/fonts/SchnyderWideMBold.eot');
+//     src: url('../assets/fonts/SchnyderWideMBold.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderWideMBold.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderWideMBold.woff') format('woff'),
+//         url('../assets/fonts/SchnyderWideMBold.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderWideMBold.svg#SchnyderWideMBold') format('svg');
+//     font-weight: bold;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Wide L';
+//     src: url('../assets/fonts/SchnyderWideLLight.eot');
+//     src: url('../assets/fonts/SchnyderWideLLight.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderWideLLight.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderWideLLight.woff') format('woff'),
+//         url('../assets/fonts/SchnyderWideLLight.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderWideLLight.svg#SchnyderWideLLight') format('svg');
+//     font-weight: 300;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Cond M';
+//     src: url('../assets/fonts/SchnyderCondMBold.eot');
+//     src: url('../assets/fonts/SchnyderCondMBold.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderCondMBold.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderCondMBold.woff') format('woff'),
+//         url('../assets/fonts/SchnyderCondMBold.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderCondMBold.svg#SchnyderCondMBold') format('svg');
+//     font-weight: bold;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'Schnyder Wide S Demi';
+//     src: url('../assets/fonts/SchnyderWideSDemi.eot');
+//     src: url('../assets/fonts/SchnyderWideSDemi.eot?#iefix') format('embedded-opentype'),
+//         url('../assets/fonts/SchnyderWideSDemi.woff2') format('woff2'),
+//         url('../assets/fonts/SchnyderWideSDemi.woff') format('woff'),
+//         url('../assets/fonts/SchnyderWideSDemi.ttf') format('truetype'),
+//         url('../assets/fonts/SchnyderWideSDemi.svg#SchnyderWideSDemi') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+

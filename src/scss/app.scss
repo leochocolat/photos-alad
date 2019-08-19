@@ -1,1 +1,14 @@
 @import 'base/base';
+@import 'base/fonts';
+@import 'base/variables';
+@import 'base/mixins';
+@import 'base/adaptative';
+@import 'base/layout';
+@import 'base/typography';
+
+//PARTIALS
+@import 'partials/buttons';
+@import 'partials/navbar';
+
+//SECTIONS
+@import 'pages/home';

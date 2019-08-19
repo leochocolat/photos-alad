@@ -1,0 +1,17 @@
+a {
+    text-decoration: none;
+    color: black;
+    &:hover {
+        color: black;
+    }
+    &:visited {
+        color: black;
+    }
+    &:focus {
+        outline: none;
+    }
+}
+
+.button {
+
+}

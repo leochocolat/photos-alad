@@ -8,3 +8,9 @@ body {
   overflow: hidden;
   // cursor: none;
 }
+
+canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
