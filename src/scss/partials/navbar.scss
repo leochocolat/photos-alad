@@ -4,16 +4,11 @@
     left: 0;
     right: 0;
 
-    display: flex;
-    width: 100%;
     margin: auto;
 
-    align-items: center;
+    display: flex;
     justify-content: space-between;
-}
-
-.navbar__left {
-    display: inline-block
+    align-items: center;
 }
 
 .navbar__item {

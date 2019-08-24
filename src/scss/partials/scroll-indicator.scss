@@ -1,0 +1,29 @@
+.scroll-indicator {
+    position: fixed;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+
+    width: 100%;
+    margin: auto;
+
+    display: flex;
+    align-items: center;
+}
+
+.scroll-indicator__cirlce {
+    width: 15px;
+    height: 15px;
+
+    border-radius: 50%;
+    background: transparent;
+    border: solid 1px black;
+
+    opacity: 0.3;
+}
+
+.scroll-indicator__copy {
+    margin-left: 15px;
+
+    font-size: 11px;
+}

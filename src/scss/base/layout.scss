@@ -1,22 +1,10 @@
-.section {
-    position: relative;
-
-    width: 100%;
-
-    margin: auto;
-    padding: 0;
-}
-
 .section__content {
-    max-width: 1300px;
-    width: 100%;
+    max-width: 1350px;
+
+    padding: 0 35px;
 
     margin: auto;
 
-    padding-left: 50px; 
-    padding-right: 50px; 
-}
-
-@include mq-regular {
-    
+    height: 30px;
+            
 }
