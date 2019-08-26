@@ -13,7 +13,8 @@ class CanvasComponent {
       '_tickHandler',
       '_resizeHandler',
       '_mousemoveHandler',
-      '_wheelHandler'
+      '_wheelHandler',
+      '_updateIndex'
     );
     
     this._canvas = document.querySelector('.js-canvas-component');
@@ -25,12 +26,15 @@ class CanvasComponent {
 
     this._settings = {
       scrollVelocityFactor: 0.5,
-      marginFactor: 0.5
+      marginFactor: 0.5,
+      imagesAmount: 10
     }
 
     this._tweenObject = {
         currentIndex: 0,
-        index: 0
+        index: 0,
+        startAngle: Math.PI/2, 
+        arcAngle: 0
     }
 
     this._colors = [
@@ -56,6 +60,8 @@ class CanvasComponent {
     this._stats.showPanel(0);
     // document.body.appendChild(this._stats.dom);
 
+    this._delta = 0;
+
     this._init();
   }
 
@@ -64,6 +70,7 @@ class CanvasComponent {
     this._getSectionPosition();
     this._setColor();
     this._initPositions();
+    this._setupTweens();
 
     this._loadImages();
   }
@@ -74,8 +81,8 @@ class CanvasComponent {
   }
 
   _initPositions() {
-    let cirlceRadius = this._width/5;
-    let limit = 70;
+    this._circleRadius = this._width/5;
+    let limit = this._settings.imagesAmount;
 
     this._rotationAngles = [];
     this._positions = [];
@@ -85,16 +92,19 @@ class CanvasComponent {
       y: this._container.top
     }
 
+    this._startAngle = Math.PI / 2;
+    this._arcAngle = 0;
+
     for (let i = 0; i <= limit; i++) {
       let value = i/limit;
-      let angle =  (value * (Math.PI / 10)) + (Math.PI / 2) ;
-      this._rotationAngles.push(- angle);
+      let angle =  (value * this._arcAngle) + this._startAngle;
+      this._rotationAngles.push(- angle); 
     } 
 
     for (let i = 0; i < this._rotationAngles.length; i++) {
-      let posX = this._origin.x +  Math.cos(this._rotationAngles[i]) * cirlceRadius;
-      let posY = this._origin.y + Math.sin(this._rotationAngles[i]) * cirlceRadius + (cirlceRadius);
-
+      let posX = this._origin.x +  Math.cos(this._rotationAngles[i]) * this._circleRadius;
+      let posY = this._origin.y + Math.sin(this._rotationAngles[i]) * this._circleRadius + this._circleRadius;
+    
       let position = { x: posX, y: posY }
 
       this._positions.push(position);
@@ -117,6 +127,58 @@ class CanvasComponent {
     this._ctx.arc(this._origin.x, this._origin.y, 5, 0, Math.PI * 2);
     this._ctx.fill();
     this._ctx.closePath();
+  }
+
+  _updatePositions() {
+    let limit = this._settings.imagesAmount;
+
+    this._origin = {
+      x: this._container.right - this._getNumber(this._container.padding),
+      y: this._container.top
+    }
+
+    this._startAngle = this._tweenObject.startAngle;
+    this._arcAngle = this._tweenObject.arcAngle; 
+
+    for (let i = 0; i <= limit; i++) {
+      let value = i/limit;
+      let angle =  (value * this._arcAngle) + this._startAngle;
+      this._rotationAngles[i] = - angle; 
+    } 
+
+    for (let i = 0; i < this._rotationAngles.length; i++) {
+      let posX = this._origin.x +  Math.cos(this._rotationAngles[i]) * this._circleRadius;
+      let posY = this._origin.y + Math.sin(this._rotationAngles[i]) * this._circleRadius + this._circleRadius;
+    
+      let position = { x: posX, y: posY }
+
+      this._positions[i] = position;
+    }
+  }
+
+  _setupTweens() {
+    const duration = 1.5;
+
+    this._timeline = new TimelineMax({
+      delay: 1,
+      onComplete: this._updateIndex
+    });
+
+    this._timeline.to(this._tweenObject, duration, {arcAngle: Math.PI/2, ease: Power3.easeIn}, 0);
+    this._timeline.to(this._tweenObject, duration, {startAngle: Math.PI, ease: Power2.easeInOut}, duration/2);
+    // this._timeline.to(this._tweenObject, duration/4, {arcAngle: 0, ease: Power2.easeInOut}, duration);
+  }
+
+  _updateIndex() {
+    console.log('index');
+
+    this._tweenObject.index += 1;
+
+    const duration = 1.5;
+
+    this._timeline = new TimelineMax();
+
+    this._timeline.fromTo(this._tweenObject, duration, {startAngle: 0, arcAngle: 0}, {startAngle: Math.PI/2, ease: Power2.easeInOut}, 0);
   }
 
   _loadImages() {
@@ -149,17 +211,14 @@ class CanvasComponent {
 
   _createImages() {
     const width = this._width/3.1;
-    const left = this._container.right - width - this._getNumber(this._container.padding);
-    const top = this._container.top;
     const aspectRatio = this._images[this._tweenObject.index].width / this._images[this._tweenObject.index].height;
     const height = width / aspectRatio; 
-    // this._ctx.drawImage(this._images[this._tweenObject.index], left, top, width, height);
 
     for (let i = 0; i < this._positions.length; i++) {
       this._ctx.setTransform(1, 0, 0, 1, this._positions[i].x, this._positions[i].y + height); 
       this._ctx.rotate(this._rotationAngles[i] + (Math.PI/2));
       this._ctx.drawImage(this._images[this._tweenObject.index], - width, - height, width, height);
-      this._ctx.setTransform(1, 0, 0, 1, 0, 0); 
+      this._ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
 
   }
@@ -169,6 +228,10 @@ class CanvasComponent {
 
     this._createImages();
     // this._createCircleRuler();
+
+    this._updatePositions();
+
+    this._delta += 0.001;
   }
 
   _resize() {
