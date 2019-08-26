@@ -63,13 +63,60 @@ class CanvasComponent {
     this._resize();
     this._getSectionPosition();
     this._setColor();
+    this._initPositions();
 
     this._loadImages();
   }
 
   _setColor() {
-      this._canvas.style.backgroundColor = this._colors[this._tweenObject.index].primary;
-      document.body.style.color = this._colors[this._tweenObject.index].secondary;
+    this._canvas.style.backgroundColor = this._colors[this._tweenObject.index].primary;
+    document.body.style.color = this._colors[this._tweenObject.index].secondary;
+  }
+
+  _initPositions() {
+    let cirlceRadius = this._width/5;
+    let limit = 70;
+
+    this._rotationAngles = [];
+    this._positions = [];
+
+    this._origin = {
+      x: this._container.right - this._getNumber(this._container.padding),
+      y: this._container.top
+    }
+
+    for (let i = 0; i <= limit; i++) {
+      let value = i/limit;
+      let angle =  (value * (Math.PI / 10)) + (Math.PI / 2) ;
+      this._rotationAngles.push(- angle);
+    } 
+
+    for (let i = 0; i < this._rotationAngles.length; i++) {
+      let posX = this._origin.x +  Math.cos(this._rotationAngles[i]) * cirlceRadius;
+      let posY = this._origin.y + Math.sin(this._rotationAngles[i]) * cirlceRadius + (cirlceRadius);
+
+      let position = { x: posX, y: posY }
+
+      this._positions.push(position);
+    }
+  }
+
+  _createCircleRuler() {
+    let cirlceRadius = this._width/4;
+
+    this._ctx.strokeStyle = 'black';
+    
+    this._ctx.beginPath();
+    this._ctx.arc(this._origin.x, this._origin.y, cirlceRadius, 0, Math.PI * 2);
+    this._ctx.stroke();
+    this._ctx.closePath();
+    
+    this._ctx.fillStyle = 'red';
+
+    this._ctx.beginPath();
+    this._ctx.arc(this._origin.x, this._origin.y, 5, 0, Math.PI * 2);
+    this._ctx.fill();
+    this._ctx.closePath();
   }
 
   _loadImages() {
@@ -78,21 +125,21 @@ class CanvasComponent {
     let img;
     
     for (let i = 0; i < data.length; i++) {
-        let url = `${path}${data[i].fileName}`;
-        img = new Image();
-        img.src = url;
-        let promise = new Promise((resolve, reject) => {
-          img.addEventListener('load', resolve(img));
-          img.addEventListener('error', () => {
-            reject(new Error(`Failed to load image's URL: ${url}`));
-          });
+      let url = `${path}${data[i].fileName}`;
+      img = new Image();
+      img.src = url;
+      let promise = new Promise((resolve, reject) => {
+        img.addEventListener('load', resolve(img));
+        img.addEventListener('error', () => {
+          reject(new Error(`Failed to load image's URL: ${url}`));
         });
-        promises.push(promise);
+      });
+      promises.push(promise);
     }
 
     Promise.all(promises).then(result => {
-        this._images = result;  
-        this._start();
+      this._images = result;  
+      this._start();
     });
   }
 
@@ -100,24 +147,28 @@ class CanvasComponent {
     this._setupEventListener();
   }
 
-  _scrollManager(e) {
-      this._scrollVelocity = e.deltaY * this._settings.scrollVelocityFactor;
+  _createImages() {
+    const width = this._width/3.1;
+    const left = this._container.right - width - this._getNumber(this._container.padding);
+    const top = this._container.top;
+    const aspectRatio = this._images[this._tweenObject.index].width / this._images[this._tweenObject.index].height;
+    const height = width / aspectRatio; 
+    // this._ctx.drawImage(this._images[this._tweenObject.index], left, top, width, height);
+
+    for (let i = 0; i < this._positions.length; i++) {
+      this._ctx.setTransform(1, 0, 0, 1, this._positions[i].x, this._positions[i].y + height); 
+      this._ctx.rotate(this._rotationAngles[i] + (Math.PI/2));
+      this._ctx.drawImage(this._images[this._tweenObject.index], - width, - height, width, height);
+      this._ctx.setTransform(1, 0, 0, 1, 0, 0); 
+    }
+
   }
 
   _draw() {
     this._ctx.clearRect(0, 0, this._width, this._height);
 
     this._createImages();
-  }
-
-  _createImages() {
-      const width = this._width/2.9;
-      const left = this._container.right - width - this._getNumber(this._container.padding);
-      const top = this._container.top;
-      const aspectRatio = this._images[0].width / this._images[0].height;
-      const height = width / aspectRatio; 
-
-      this._ctx.drawImage(this._images[0], left, top, width, height);
+    // this._createCircleRuler();
   }
 
   _resize() {
@@ -130,12 +181,16 @@ class CanvasComponent {
 
   _getSectionPosition() {
     this._container = {
-        left: this.ui.section.getBoundingClientRect().left,
-        top: this.ui.section.getBoundingClientRect().top,
-        right: this.ui.section.getBoundingClientRect().right,
-        bottom: this.ui.section.getBoundingClientRect().bottom,
-        padding: window.getComputedStyle(this.ui.section).paddingLeft
+      left: this.ui.section.getBoundingClientRect().left,
+      top: this.ui.section.getBoundingClientRect().top,
+      right: this.ui.section.getBoundingClientRect().right,
+      bottom: this.ui.section.getBoundingClientRect().bottom,
+      padding: window.getComputedStyle(this.ui.section).paddingLeft
     }
+  }
+
+  _scrollManager(e) {
+    this._scrollVelocity = e.deltaY * this._settings.scrollVelocityFactor;
   }
 
   _getNumber(string) {
@@ -163,6 +218,7 @@ class CanvasComponent {
   _resizeHandler() {
     this._resize();
     this._getSectionPosition();
+    this._initPositions();
   }
 
   _wheelHandler(e) {

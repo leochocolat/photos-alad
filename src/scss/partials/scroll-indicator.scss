@@ -14,8 +14,8 @@
 .scroll-indicator__canvas-container {
     position: relative;
 
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
 
 .scroll-indicator-fill {
@@ -24,7 +24,6 @@
     top: 0;
 
     transform: rotate(-90deg);
-
 }
 
 .scroll-indicator__copy {

@@ -14,7 +14,8 @@ class ScrollCircleComponent {
   
     this.ui = {
       scollIndicator: document.querySelector('.js-scroll-indicator'),
-      canvas: document.querySelector('.js-scroll-indicator-fill')
+      canvas: document.querySelector('.js-scroll-indicator-fill'),
+      container: document.querySelector('.js-scroll-indicator-container')
     }
 
     this._canvas = this.ui.canvas;
@@ -36,20 +37,24 @@ class ScrollCircleComponent {
   _getStyle() {
     this._canvasPosition = {
       top: this.ui.canvas.getBoundingClientRect().top,
-      left: this.ui.canvas.getBoundingClientRect().left,
+      left: this.ui.canvas.getBoundingClientRect().left
+    }
+
+    this._containerSize = {
+      width: this.ui.container.getBoundingClientRect().width,
+      height: this.ui.container.getBoundingClientRect().height
     }
   }
 
   _resize() {
-    this._width = 20;
-    this._height = 20;
+    this._width = this._containerSize.width;
+    this._height = this._containerSize.height;
 
-    this._cirlceWidth = 15;
-    this._cirlceHeight = 15;
+    this._cirlceWidth = this._width - 5;
+    this._cirlceHeight = this._height - 5;
 
     this._canvas.width = this._width;
     this._canvas.height = this._height;
-    
   }
 
   _drawArc() {
@@ -75,7 +80,7 @@ class ScrollCircleComponent {
   _tick() {
     this._ctx.clearRect(0, 0, this._width, this._height);
 
-    this._delta += 0.01;
+    this._delta += 0.02;
     this._cirlceProgress = Math.abs(Math.cos(this._delta));
     this._drawArc();
     this._drawProgress();
