@@ -7,7 +7,7 @@ import * as dat from 'dat.gui';
 import {TimelineLite, TweenLite, Power0} from 'gsap/TweenMax';
 import Lerp from '../utils/Lerp.js';
 
-import data from '../../assets/data/introImages.json';
+import data from '../../assets/data/data.json';
 import CursorComponent from './CursorComponent';
 import ScrollModule from '../modules/ScrollModule';
 
@@ -49,6 +49,11 @@ class CanvasComponent {
     gui.add(this._settings, 'wheelSensibility', 1, 100).step(1);
 
     this._scrollDelta = {
+      x: 0,
+      y: 0
+    }
+
+    this._mousePosition = {
       x: 0,
       y: 0
     }
