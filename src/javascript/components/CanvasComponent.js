@@ -340,7 +340,7 @@ class CanvasComponent {
       this._isScrollEnabled = false;
     } else if (this._scrollDelta.y <  - this._settings.wheelSensibility && this._isScrollEnabled == true) {
       this._previous();
-      this._isScrollEnabled = false;
+      // this._isScrollEnabled = false;
     }
   }
   
