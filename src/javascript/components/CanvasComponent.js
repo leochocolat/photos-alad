@@ -225,7 +225,8 @@ class CanvasComponent {
   }
 
   _updateIndex() {
-    this._tweenObject.index += 1;
+    let index = this._tweenObject.index + 1;
+    this._tweenObject.index = this._mod(index, data.length);
   }
 
   _loadImages() {
@@ -301,6 +302,10 @@ class CanvasComponent {
 
   _scrollManager(e) {
     this._scrollVelocity = e.deltaY * this._settings.scrollVelocityFactor;
+  }
+
+  _mod(n, m) {
+    return ((n % m) + m) % m;
   }
 
   _getNumber(string) {
