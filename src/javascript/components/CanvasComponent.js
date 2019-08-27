@@ -1,9 +1,16 @@
 //IMPORTS
 import _ from 'underscore';
-import {TweenMax, TimelineLite, TweenLite, Power0} from 'gsap/TweenMax';
+
 import Stats from 'stats.js';
+import * as dat from 'dat.gui';
+
+import {TimelineLite, TweenLite, Power0} from 'gsap/TweenMax';
 import Lerp from '../utils/Lerp.js';
-import data from '../../assets/data/data.json';
+
+import data from '../../assets/data/introImages.json';
+import CursorComponent from './CursorComponent';
+import ScrollModule from '../modules/ScrollModule';
+
 // EXAMPLE
 class CanvasComponent {
 
@@ -14,21 +21,39 @@ class CanvasComponent {
       '_resizeHandler',
       '_mousemoveHandler',
       '_wheelHandler',
-      '_updateIndex'
+      '_updateIndex',
+      '_onCloseCompleteHandler',
+      '_onOpenCompleteHandler'
     );
     
     this._canvas = document.querySelector('.js-canvas-component');
     this._ctx = this._canvas.getContext('2d');
 
     this.ui = {
-        section: document.querySelector('.js-section-canvas')
+      section: document.querySelector('.js-section-canvas')
     }
 
+    this.component = {};
+    this.component.cursor = new CursorComponent({ el: this._canvas });
+
     this._settings = {
-      scrollVelocityFactor: 0.5,
-      marginFactor: 0.5,
-      imagesAmount: 10
+      imagesAmount: 10,
+      wheelSensibility: 20
     }
+
+    const gui = new dat.GUI({
+      closed: true
+    });
+
+    gui.add(this._settings, 'imagesAmount', 5, 500).step(1);
+    gui.add(this._settings, 'wheelSensibility', 1, 100).step(1);
+
+    this._scrollDelta = {
+      x: 0,
+      y: 0
+    }
+
+    this._isScrollEnabled = true;
 
     this._tweenObject = {
         currentIndex: 0,
@@ -58,7 +83,7 @@ class CanvasComponent {
 
     this._stats = new Stats();
     this._stats.showPanel(0);
-    // document.body.appendChild(this._stats.dom);
+    document.body.appendChild(this._stats.dom);
 
     this._delta = 0;
 
@@ -70,7 +95,6 @@ class CanvasComponent {
     this._getSectionPosition();
     this._setColor();
     this._initPositions();
-    this._setupTweens();
 
     this._loadImages();
   }
@@ -129,6 +153,45 @@ class CanvasComponent {
     this._ctx.closePath();
   }
 
+  _next() {
+    this._closeImage();
+  }
+
+  _previous() {
+    console.log('TODO: Previous Animation');
+  }
+
+  _closeImage() {
+    const duration = 1.5;
+
+    this._timelineClose = new TimelineMax({
+      paused: false,
+      onComplete: this._onCloseCompleteHandler
+    });
+
+    this._timelineClose.to(this._tweenObject, duration, {arcAngle: Math.PI/2, ease: Power3.easeIn}, 0);
+    this._timelineClose.to(this._tweenObject, duration, {startAngle: Math.PI, ease: Power2.easeInOut}, duration/2);
+  }
+
+  _onCloseCompleteHandler() {
+    this._updateIndex();
+    this._openImage();
+  }
+
+  _openImage() {
+    const duration = 1.5;
+
+    this._timelineOpen = new TimelineMax({
+      onComplete: this._onOpenCompleteHandler
+    });
+
+    this._timelineOpen.fromTo(this._tweenObject, duration, {startAngle: 0, arcAngle: 0}, {startAngle: Math.PI/2, ease: Power2.easeInOut}, 0);
+  }
+
+  _onOpenCompleteHandler() {
+    this._isScrollEnabled = true;
+  }
+
   _updatePositions() {
     let limit = this._settings.imagesAmount;
 
@@ -156,29 +219,8 @@ class CanvasComponent {
     }
   }
 
-  _setupTweens() {
-    const duration = 1.5;
-
-    this._timeline = new TimelineMax({
-      delay: 1,
-      onComplete: this._updateIndex
-    });
-
-    this._timeline.to(this._tweenObject, duration, {arcAngle: Math.PI/2, ease: Power3.easeIn}, 0);
-    this._timeline.to(this._tweenObject, duration, {startAngle: Math.PI, ease: Power2.easeInOut}, duration/2);
-    // this._timeline.to(this._tweenObject, duration/4, {arcAngle: 0, ease: Power2.easeInOut}, duration);
-  }
-
   _updateIndex() {
-    console.log('index');
-
     this._tweenObject.index += 1;
-
-    const duration = 1.5;
-
-    this._timeline = new TimelineMax();
-
-    this._timeline.fromTo(this._tweenObject, duration, {startAngle: 0, arcAngle: 0}, {startAngle: Math.PI/2, ease: Power2.easeInOut}, 0);
   }
 
   _loadImages() {
@@ -264,10 +306,10 @@ class CanvasComponent {
     TweenLite.ticker.addEventListener('tick', this._tickHandler);
 
     window.addEventListener('resize', this._resizeHandler);
-
     window.addEventListener('mousemove', this._mousemoveHandler);
 
-    window.addEventListener('mousewheel', this._wheelHandler);
+    ScrollModule.addEventListener('wheel', this._wheelHandler);
+    ScrollModule.addEventListener('wheel:end', this._wheelEndHandler);
   }
 
   _tickHandler() {
@@ -285,24 +327,21 @@ class CanvasComponent {
   }
 
   _wheelHandler(e) {
-    if (this._scrollTween) {
-      this._scrollTween.kill();
+    this._scrollDelta.x = ScrollModule.getWheelDelta().x;
+    this._scrollDelta.y = ScrollModule.getWheelDelta().y;
+
+    if (this._scrollDelta.y > this._settings.wheelSensibility && this._isScrollEnabled == true) {
+      this._next();
+      this._isScrollEnabled = false;
+    } else if (this._scrollDelta.y <  - this._settings.wheelSensibility && this._isScrollEnabled == true) {
+      this._previous();
+      this._isScrollEnabled = false;
     }
-
-    this._isScrolling = true;
-
-    this._scrollManager(e);
-    
-    clearTimeout(this._mouseWheelTimeout);
-    this._mouseWheelTimeout = setTimeout(() => {
-      this._wheelEndHandler();
-    }, 100);
   }
-
+  
   _wheelEndHandler() {
-    //Ease end of scroll
-    //TODO: ADJUST TIMING WITH SCROLL VELOCITY
-    this._scrollTween = TweenMax.to(this, 0.3, { _scrollVelocity: 0, ease: Power0.easeNone });
+    this._scrollDelta.x = ScrollModule.getWheelDelta().x;
+    this._scrollDelta.y = ScrollModule.getWheelDelta().y;
   }
 
   _mousemoveHandler(e) {
@@ -310,6 +349,7 @@ class CanvasComponent {
       x: e.clientX,
       y: e.clientY
     }
+    this.component.cursor.move(this._mousePosition);
   }
 }
 

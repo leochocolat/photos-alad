@@ -2,7 +2,7 @@ import Module from '../core/Module';
 import _ from 'underscore';
 import Lerp from '../utils/Lerp.js';
 
-import { addWheelListener, removeWheelListener } from 'wheel';
+import { addWheelListener } from 'wheel';
 import { TweenLite } from 'gsap/TweenMax';
 
 class ScrollModule extends Module {
@@ -21,8 +21,12 @@ class ScrollModule extends Module {
             x: 0, 
             y: 0
         }
-
+        
         this._setup();
+    }
+    
+    _setup() {
+        this._setupEventListener();
     }
 
     getWheelDelta() {
@@ -47,10 +51,6 @@ class ScrollModule extends Module {
         }
     }
     
-    _setup() {
-        this._setupEventListener();
-    }
-    
     _setupEventListener() {
         addWheelListener(window, this._scrollHandler, { passive: false });
     }
@@ -70,9 +70,6 @@ class ScrollModule extends Module {
 
         this._setTimeout();
     }
-
-
-
 }
 
 export default new ScrollModule();
