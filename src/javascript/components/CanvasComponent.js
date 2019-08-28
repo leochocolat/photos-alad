@@ -7,7 +7,7 @@ import * as dat from 'dat.gui';
 import {TimelineLite, TweenLite, Power0} from 'gsap/TweenMax';
 import Lerp from '../utils/Lerp.js';
 
-import data from '../../assets/data/data.json';
+import data from '../../assets/data/introImages.json';
 import CursorComponent from './CursorComponent';
 import ScrollModule from '../modules/ScrollModule';
 

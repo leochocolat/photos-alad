@@ -3,36 +3,36 @@
         "fileName": "jade.jpg",
         "title": "Jade C",
         "modele": "Jade C",
-        "tag": "vert"
-    },
-    {
-        "fileName": "Elia3.jpg",
-        "title": "Elia",
-        "modele": "Elia",
-        "tag": "blue"
-    },
-    {
-        "fileName": "fanette.jpg",
-        "title": "",
-        "modele": "",
-        "tag": "blue"
+        "tag": "green"
     },
     {
         "fileName": "Martin56.jpg",
         "title": "",
-        "modele": "",
+        "modele": "Martin",
         "tag": "blue"
     },
     {
-        "fileName": "WD3.jpg",
+        "fileName": "4.jpg",
         "title": "",
         "modele": "",
-        "tag": "blue"
+        "tag": "red"
     },
     {
-        "fileName": "Zone51.jpg",
+        "fileName": "glitch-rose.jpeg",
         "title": "",
-        "modele": "",
-        "tag": "blue"
+        "modele": "Jonas",
+        "tag": "pink"
+    },
+    {
+        "fileName": "annabelle45.jpg",
+        "title": "",
+        "modele": "Anabelle",
+        "tag": "gold"
+    },
+    {
+        "fileName": "glitch-nb.jpeg",
+        "title": "",
+        "modele": "Jonas",
+        "tag": "bw"
     }
 ]
