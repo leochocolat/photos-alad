@@ -30,7 +30,9 @@ class CanvasComponent {
     this._ctx = this._canvas.getContext('2d');
 
     this.ui = {
-      section: document.querySelector('.js-section-canvas')
+      section: document.querySelector('.js-section-canvas'),
+      color: document.querySelectorAll('.js-color-secondary'),
+      background: document.querySelectorAll('.js-bg-secondary')
     }
 
     this.component = {};
@@ -68,22 +70,30 @@ class CanvasComponent {
     }
 
     this._colors = [
-        {
-            primary: '#faf3e1',
-            secondary: '#121212'
-        },
-        {
-            primary: '',
-            secondary: ''
-        },
-        {
-            primary: '',
-            secondary: ''
-        },
-        {
-            primary: '',
-            secondary: ''
-        }
+      {
+          primary: '#faf3e1',
+          secondary: '#121212'
+      },
+      {
+          primary: '#121212',
+          secondary: '#faf3e1'
+      },
+      {
+          primary: '#faf3e1',
+          secondary: '#121212'
+      },
+      {
+        primary: '#121212',
+        secondary: '#faf3e1'
+      },
+      {
+        primary: '#faf3e1',
+        secondary: '#121212'
+      },
+      {
+        primary: '#121212',
+        secondary: '#faf3e1'
+      },
     ];
 
     this._stats = new Stats();
@@ -105,8 +115,17 @@ class CanvasComponent {
   }
 
   _setColor() {
-    this._canvas.style.backgroundColor = this._colors[this._tweenObject.index].primary;
-    document.body.style.color = this._colors[this._tweenObject.index].secondary;
+    TweenLite.set(this._canvas.style, { backgroundColor: this._colors[this._tweenObject.index].primary });
+    TweenLite.set(this.ui.color, { color: this._colors[this._tweenObject.index].secondary });
+    TweenLite.set(this.ui.background, { backgroundColor: this._colors[this._tweenObject.index].secondary });
+  }
+
+  _updateColor() {
+    const duration = 0.5; 
+
+    TweenLite.to(this._canvas.style, duration, { backgroundColor: this._colors[this._tweenObject.index].primary });
+    TweenLite.to(this.ui.color, duration, { color: this._colors[this._tweenObject.index].secondary });
+    TweenLite.to(this.ui.background, duration, { backgroundColor: this._colors[this._tweenObject.index].secondary });
   }
 
   _initPositions() {
@@ -181,6 +200,7 @@ class CanvasComponent {
   _onCloseCompleteHandler() {
     this._updateIndex();
     this._openImage();
+    this._updateColor();
   }
 
   _openImage() {

@@ -20,9 +20,7 @@
 
     margin-right: 70px;
 
-    &:after {
-        content: '';
-
+    .navbar-item__after {
         position: absolute;
         left: calc(100% + 16px);
         top: 53%;
