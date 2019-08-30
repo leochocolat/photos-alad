@@ -6,11 +6,6 @@ class CursorComponent {
 
     constructor(options) {
 
-        _.bindAll(
-            this,
-            '_tickHandler'
-        );
-
         this.el = options.el;
 
         this._cursorPosition = {
@@ -28,36 +23,50 @@ class CursorComponent {
             y: 0
         }
 
+        this._tweenObject = {
+            color: '#121212'
+        }
+
         this._setup();
     }
 
     _setup() {
         this._ctx = this.el.getContext('2d');
-        this._setupEventListener();
+    }
+
+    setColor(color) {
+        TweenLite.set(this._tweenObject, { color: color });
+    }
+    
+    updateColor(color) {
+        TweenLite.to(this._tweenObject, 0.5, { color: color });
     }
 
     move(position) {
         this._cursorPosition = position;
     }
 
-    _createCursors() {
+    createCursors() {
         const circleRadius = 20;
-        const dotRadius = 2.5;
-
-        this._ctx.strokeStyle = '#555555';
+        const dotRadius = 2;
+        
+        this._ctx.strokeStyle = this._tweenObject.color;
+        this._ctx.fillStyle = this._tweenObject.color;
         
         //circle
         this._ctx.beginPath();
         this._ctx.arc(this._circlePosition.x, this._circlePosition.y, circleRadius, 0, 2 * Math.PI);
         this._ctx.stroke();
-
+        this._ctx.closePath();
+        
         //dot
         this._ctx.beginPath();
         this._ctx.arc(this._dotPosition.x, this._dotPosition.y, dotRadius, 0, 2 * Math.PI);
         this._ctx.fill();
+        this._ctx.closePath();
     }
 
-    _updateCursors() {
+    updateCursors() {
         //dot
         this._circlePosition = {
             x: Lerp.lerp(this._cursorPosition.x, this._circlePosition.x, 0.9),
@@ -70,22 +79,6 @@ class CursorComponent {
             y: Lerp.lerp(this._cursorPosition.y, this._dotPosition.y, 0.2),
         };
     }
-
-    _tick() {
-        this._ctx.clearRect(0, 0, this.el.width, this.el.height);
-        this._updateCursors();
-        this._createCursors();
-    }
-
-    _setupEventListener() {
-        TweenLite.ticker.addEventListener('tick', this._tickHandler);
-    }
-
-    _tickHandler() {
-        this._tick();
-    }
-
-
 
 }
 

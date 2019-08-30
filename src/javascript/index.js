@@ -5,5 +5,4 @@
 // import CanvasThreeSpiralComponent from './components/CanvasThreeSpiralComponent.js';//THREE 
 // import PixiComponent from './components/PixiComponent.js';//PIXI 
 
-import scrollCirlceComponent from './components/ScrollCirlceComponent.js';
 import CanvasComponent from './components/CanvasComponent.js';

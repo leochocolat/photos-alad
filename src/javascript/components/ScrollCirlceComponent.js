@@ -11,6 +11,10 @@ class ScrollCircleComponent {
       this,
       '_tickHandler'
     );
+
+    this._tweenObject = {
+      color: '#121212'
+    }
   
     this.ui = {
       scollIndicator: document.querySelector('.js-scroll-indicator'),
@@ -24,8 +28,6 @@ class ScrollCircleComponent {
     this._delta = 0;
 
     this._setup();
-
-
   }
 
   _setup() {
@@ -46,20 +48,16 @@ class ScrollCircleComponent {
     }
   }
 
-  _resize() {
-    this._width = this._containerSize.width;
-    this._height = this._containerSize.height;
+  setColor(color) {
+    TweenLite.set(this._tweenObject, { color: color });
+  }
 
-    this._cirlceWidth = this._width - 5;
-    this._cirlceHeight = this._height - 5;
-
-    this._canvas.width = this._width;
-    this._canvas.height = this._height;
+  updateColor(color) {
+    TweenLite.to(this._tweenObject, 0.5, { color: color });
   }
 
   _drawArc() {
-    this._ctx.strokeStyle = 'rgba(0, 0, 0, .2)';
-
+    this._ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
     this._ctx.beginPath();
     this._ctx.arc(this._width/2, this._height/2, this._cirlceWidth/2, 0, 2 * Math.PI);
     this._ctx.stroke();
@@ -67,7 +65,7 @@ class ScrollCircleComponent {
   }
   
   _drawProgress() {  
-    this._ctx.strokeStyle = 'black';
+    this._ctx.strokeStyle = this._tweenObject.color;
   
     this._ctx.beginPath();
 
@@ -86,6 +84,17 @@ class ScrollCircleComponent {
     this._drawProgress();
   }
 
+  _resize() {
+    this._width = this._containerSize.width;
+    this._height = this._containerSize.height;
+
+    this._cirlceWidth = this._width - 5;
+    this._cirlceHeight = this._height - 5;
+
+    this._canvas.width = this._width;
+    this._canvas.height = this._height;
+  }
+
   _setupEventListeners() {
     TweenLite.ticker.addEventListener('tick', this._tickHandler);
   }
@@ -93,10 +102,7 @@ class ScrollCircleComponent {
   _tickHandler() {
     this._tick();
   }
-
-
-
 }
 
 
-export default new ScrollCircleComponent();
+export default ScrollCircleComponent;

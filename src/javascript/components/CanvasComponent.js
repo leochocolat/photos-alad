@@ -10,6 +10,7 @@ import Lerp from '../utils/Lerp.js';
 import data from '../../assets/data/introImages.json';
 import CursorComponent from './CursorComponent';
 import ScrollModule from '../modules/ScrollModule';
+import ScrollCirlceComponent from './ScrollCirlceComponent.js';
 
 // EXAMPLE
 class CanvasComponent {
@@ -37,6 +38,7 @@ class CanvasComponent {
 
     this.component = {};
     this.component.cursor = new CursorComponent({ el: this._canvas });
+    this.component.scrollIndicator = new ScrollCirlceComponent();
 
     this._settings = {
       imagesAmount: 10,
@@ -109,6 +111,9 @@ class CanvasComponent {
     this._resize();
     this._getSectionPosition();
     this._setColor();
+    this.component.scrollIndicator.setColor(this._colors[0].secondary);
+    this.component.cursor.setColor(this._colors[0].secondary);
+
     this._initPositions();
 
     this._loadImages();
@@ -122,10 +127,18 @@ class CanvasComponent {
 
   _updateColor() {
     const duration = 0.5; 
+    const delay = 0.8;
 
-    TweenLite.to(this._canvas.style, duration, { backgroundColor: this._colors[this._tweenObject.index].primary, delay: .8 });
-    TweenLite.to(this.ui.color, duration, { color: this._colors[this._tweenObject.index].secondary, delay: .8 });
-    TweenLite.to(this.ui.background, duration, { backgroundColor: this._colors[this._tweenObject.index].secondary, delay: .8 });
+    TweenLite.to(this._canvas.style, duration, { backgroundColor: this._colors[this._tweenObject.index].primary, delay: delay });
+    TweenLite.to(this.ui.color, duration, { color: this._colors[this._tweenObject.index].secondary, delay: delay });
+    TweenLite.to(this.ui.background, duration, { backgroundColor: this._colors[this._tweenObject.index].secondary, delay: delay });
+
+    setTimeout(() => {
+      this.component.scrollIndicator.updateColor(this._colors[this._tweenObject.index].secondary);
+      this.component.cursor.updateColor(this._colors[this._tweenObject.index].secondary);
+    }, delay * 1000)
+    
+    console.log(delay * 1000)
   }
 
   _initPositions() {
@@ -295,7 +308,8 @@ class CanvasComponent {
     this._ctx.clearRect(0, 0, this._width, this._height);
 
     this._createImages();
-    // this._createCircleRuler();
+    this.component.cursor.createCursors();
+    this.component.cursor.updateCursors();
 
     this._updatePositions();
 
