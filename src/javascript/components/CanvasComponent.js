@@ -51,8 +51,8 @@ class CanvasComponent {
       closed: true
     });
 
-    gui.add(this._settings, 'imagesAmount', 5, 500).step(1);
     gui.add(this._settings, 'wheelSensibility', 1, 100).step(1);
+    gui.add(this._settings, 'imagesAmount', 5, 500).step(1).onChange(this._initPositions);;
     gui.add(this._settings, 'radiusFactor', 1, 10).step(0.5).onChange(this._initPositions);
 
     this._scrollDelta = {
