@@ -13,7 +13,8 @@ class ScrollCircleComponent {
     );
 
     this._tweenObject = {
-      color: '#121212'
+      color: '#121212',
+      cirlceProgress: 0
     }
   
     this.ui = {
@@ -54,6 +55,10 @@ class ScrollCircleComponent {
 
   updateColor(color) {
     TweenLite.to(this._tweenObject, 0.5, { color: color });
+  }
+
+  progress(progress) {
+    this._tweenObject.cirlceProgress = progress;
   }
 
   _drawArc() {

@@ -24,7 +24,8 @@ class CanvasComponent {
       '_wheelHandler',
       '_updateIndex',
       '_onCloseCompleteHandler',
-      '_onOpenCompleteHandler'
+      '_onOpenCompleteHandler',
+      '_initPositions'
     );
     
     this._canvas = document.querySelector('.js-canvas-component');
@@ -42,7 +43,8 @@ class CanvasComponent {
 
     this._settings = {
       imagesAmount: 10,
-      wheelSensibility: 20
+      wheelSensibility: 20,
+      radiusFactor: 1
     }
 
     const gui = new dat.GUI({
@@ -51,6 +53,7 @@ class CanvasComponent {
 
     gui.add(this._settings, 'imagesAmount', 5, 500).step(1);
     gui.add(this._settings, 'wheelSensibility', 1, 100).step(1);
+    gui.add(this._settings, 'radiusFactor', 1, 10).step(0.5).onChange(this._initPositions);
 
     this._scrollDelta = {
       x: 0,
@@ -136,13 +139,12 @@ class CanvasComponent {
     setTimeout(() => {
       this.component.scrollIndicator.updateColor(this._colors[this._tweenObject.index].secondary);
       this.component.cursor.updateColor(this._colors[this._tweenObject.index].secondary);
-    }, delay * 1000)
-    
-    console.log(delay * 1000)
+    }, delay * 1000);
+
   }
 
   _initPositions() {
-    this._circleRadius = this._width/5;
+    this._circleRadius = this._width/5 * this._settings.radiusFactor;
     let limit = this._settings.imagesAmount;
 
     this._rotationAngles = [];
@@ -332,10 +334,6 @@ class CanvasComponent {
       bottom: this.ui.section.getBoundingClientRect().bottom,
       padding: window.getComputedStyle(this.ui.section).paddingLeft
     }
-  }
-
-  _scrollManager(e) {
-    this._scrollVelocity = e.deltaY * this._settings.scrollVelocityFactor;
   }
 
   _mod(n, m) {
