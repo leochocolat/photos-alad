@@ -123,9 +123,9 @@ class CanvasComponent {
   _updateColor() {
     const duration = 0.5; 
 
-    TweenLite.to(this._canvas.style, duration, { backgroundColor: this._colors[this._tweenObject.index].primary });
-    TweenLite.to(this.ui.color, duration, { color: this._colors[this._tweenObject.index].secondary });
-    TweenLite.to(this.ui.background, duration, { backgroundColor: this._colors[this._tweenObject.index].secondary });
+    TweenLite.to(this._canvas.style, duration, { backgroundColor: this._colors[this._tweenObject.index].primary, delay: .8 });
+    TweenLite.to(this.ui.color, duration, { color: this._colors[this._tweenObject.index].secondary, delay: .8 });
+    TweenLite.to(this.ui.background, duration, { backgroundColor: this._colors[this._tweenObject.index].secondary, delay: .8 });
   }
 
   _initPositions() {
