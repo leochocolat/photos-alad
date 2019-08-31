@@ -25,7 +25,9 @@ class CanvasComponent {
       '_updateIndex',
       '_onCloseCompleteHandler',
       '_onOpenCompleteHandler',
-      '_initPositions'
+      '_initPositions',
+      '_onCloseUpdateHandler',
+      '_onOpenUpdateHandler'
     );
     
     this._canvas = document.querySelector('.js-canvas-component');
@@ -44,7 +46,8 @@ class CanvasComponent {
     this._settings = {
       imagesAmount: 10,
       wheelSensibility: 20,
-      radiusFactor: 1
+      radiusFactor: 9,
+      imageScale: 0.31
     }
 
     const gui = new dat.GUI({
@@ -52,8 +55,9 @@ class CanvasComponent {
     });
 
     gui.add(this._settings, 'wheelSensibility', 1, 100).step(1);
-    gui.add(this._settings, 'imagesAmount', 5, 500).step(1).onChange(this._initPositions);;
-    gui.add(this._settings, 'radiusFactor', 1, 10).step(0.5).onChange(this._initPositions);
+    gui.add(this._settings, 'imagesAmount', 5, 200).step(1).onChange(this._initPositions);;
+    gui.add(this._settings, 'radiusFactor', -10, 10).step(0.5).onChange(this._initPositions);
+    gui.add(this._settings, 'imageScale', 0.01, 5).step(0.01);
 
     this._scrollDelta = {
       x: 0,
@@ -76,16 +80,16 @@ class CanvasComponent {
 
     this._colors = [
       {
-          primary: '#faf3e1',
-          secondary: '#121212'
+        primary: '#faf3e1',
+        secondary: '#121212'
       },
       {
-          primary: '#121212',
-          secondary: '#faf3e1'
+        primary: '#121212',
+        secondary: '#faf3e1'
       },
       {
-          primary: '#faf3e1',
-          secondary: '#121212'
+        primary: '#faf3e1',
+        secondary: '#121212'
       },
       {
         primary: '#121212',
@@ -205,11 +209,16 @@ class CanvasComponent {
 
     this._timelineClose = new TimelineMax({
       paused: false,
+      onUpdate: this._onCloseUpdateHandler,
       onComplete: this._onCloseCompleteHandler
     });
 
     this._timelineClose.to(this._tweenObject, duration, {arcAngle: Math.PI/2, ease: Power3.easeIn}, 0);
     this._timelineClose.to(this._tweenObject, duration, {startAngle: Math.PI, ease: Power2.easeInOut}, duration/2);
+  }
+
+  _onCloseUpdateHandler() {
+    this.component.cursor.progress(this._timelineClose.progress());
   }
 
   _onCloseCompleteHandler() {
@@ -222,6 +231,7 @@ class CanvasComponent {
     const duration = 1.5;
 
     this._timelineOpen = new TimelineMax({
+      onUpdate: this._onOpenUpdateHandler,
       onComplete: this._onOpenCompleteHandler
     });
 
@@ -230,6 +240,11 @@ class CanvasComponent {
 
   _onOpenCompleteHandler() {
     this._isScrollEnabled = true;
+  }
+
+  _onOpenUpdateHandler() {
+    this.component.cursor.progress(1 - this._timelineOpen.progress());
+    this.component.cursor.rotate(this._timelineOpen.progress());
   }
 
   _updatePositions() {
@@ -293,7 +308,7 @@ class CanvasComponent {
   }
 
   _createImages() {
-    const width = this._width/3.1;
+    const width = this._width * this._settings.imageScale;
     const aspectRatio = this._images[this._tweenObject.index].width / this._images[this._tweenObject.index].height;
     const height = width / aspectRatio; 
 

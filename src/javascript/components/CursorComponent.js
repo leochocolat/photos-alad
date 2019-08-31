@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import {TweenMax, TimelineLite, TweenLite, Power0} from 'gsap/TweenMax';
-import Lerp from '../utils/Lerp.js';
+import Lerp from '../utils/Lerp';
+import ColorUtil from '../utils/ColorUtil';
 
 class CursorComponent {
 
@@ -27,6 +28,9 @@ class CursorComponent {
             color: '#121212'
         }
 
+        this._cirlceProgress = 0;
+        this._rotateFactor = 0;
+
         this._setup();
     }
 
@@ -46,16 +50,37 @@ class CursorComponent {
         this._cursorPosition = position;
     }
 
+    progress(progress) {
+        this._cirlceProgress = progress;
+    }
+
+    rotate(progress) {
+        this._rotateFactor = progress;
+    }
+
     createCursors() {
         const circleRadius = 20;
-        const dotRadius = 2;
+        const dotRadius = 1.5;
+        let color = ColorUtil.HexaToRGB(this._tweenObject.color);
         
-        this._ctx.strokeStyle = this._tweenObject.color;
+        this._ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`;
         this._ctx.fillStyle = this._tweenObject.color;
         
         //circle
         this._ctx.beginPath();
         this._ctx.arc(this._circlePosition.x, this._circlePosition.y, circleRadius, 0, 2 * Math.PI);
+        this._ctx.stroke();
+        this._ctx.closePath();
+        
+        //circle fill
+        this._ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 1)`;
+        this._ctx.beginPath();
+
+        this._ctx.setTransform(1, 0, 0, 1, this._circlePosition.x, this._circlePosition.y); 
+        this._ctx.rotate( - Math.PI/2 + (this._rotateFactor * 2 * Math.PI));
+        this._ctx.arc(0, 0, circleRadius, 0, 2 * Math.PI * this._cirlceProgress);
+        this._ctx.setTransform(1, 0, 0, 1, 0, 0);
+
         this._ctx.stroke();
         this._ctx.closePath();
         
