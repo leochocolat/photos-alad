@@ -63,7 +63,7 @@ class CursorComponent {
         const dotRadius = 1.5;
         let color = ColorUtil.HexaToRGB(this._tweenObject.color);
         
-        this._ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`;
+        this._ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.2)`;
         this._ctx.fillStyle = this._tweenObject.color;
         
         //circle
@@ -83,14 +83,14 @@ class CursorComponent {
 
         this._ctx.stroke();
         this._ctx.closePath();
-        
+
         //dot
         this._ctx.beginPath();
         this._ctx.arc(this._dotPosition.x, this._dotPosition.y, dotRadius, 0, 2 * Math.PI);
         this._ctx.fill();
         this._ctx.closePath();
     }
-
+    
     updateCursors() {
         //dot
         this._circlePosition = {

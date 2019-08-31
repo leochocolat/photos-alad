@@ -9,10 +9,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    user-select: none;
 }
 
 .navbar__item {
     display: inline-block;
+}
+
+.navbar__about {
+    cursor: none;
 }
 
 .navbar__title {

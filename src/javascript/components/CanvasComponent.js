@@ -4,8 +4,7 @@ import _ from 'underscore';
 import Stats from 'stats.js';
 import * as dat from 'dat.gui';
 
-import {TimelineLite, TweenLite, Power0} from 'gsap/TweenMax';
-import Lerp from '../utils/Lerp.js';
+import {TimelineLite, TweenLite} from 'gsap/TweenMax';
 
 import data from '../../assets/data/introImages.json';
 import CursorComponent from './CursorComponent';
@@ -43,22 +42,6 @@ class CanvasComponent {
     this.component.cursor = new CursorComponent({ el: this._canvas });
     this.component.scrollIndicator = new ScrollCirlceComponent();
 
-    this._settings = {
-      imagesAmount: 10,
-      wheelSensibility: 20,
-      radiusFactor: 9,
-      imageScale: 0.31
-    }
-
-    const gui = new dat.GUI({
-      closed: true
-    });
-
-    gui.add(this._settings, 'wheelSensibility', 1, 100).step(1);
-    gui.add(this._settings, 'imagesAmount', 5, 200).step(1).onChange(this._initPositions);;
-    gui.add(this._settings, 'radiusFactor', -10, 10).step(0.5).onChange(this._initPositions);
-    gui.add(this._settings, 'imageScale', 0.01, 5).step(0.01);
-
     this._scrollDelta = {
       x: 0,
       y: 0
@@ -71,11 +54,27 @@ class CanvasComponent {
 
     this._isScrollEnabled = true;
 
+    this._delta = 0;
+
+    this._settings = {
+      imagesAmount: 10,
+      wheelSensibility: 20,
+      radiusFactor: 9,
+      imageScale: 0.31
+    }
+
+    const gui = new dat.GUI({ closed: true });
+    gui.add(this._settings, 'wheelSensibility', 1, 100).step(1);
+    gui.add(this._settings, 'imagesAmount', 5, 200).step(1).onChange(this._initPositions);;
+    gui.add(this._settings, 'radiusFactor', -10, 10).step(0.5).onChange(this._initPositions);
+    gui.add(this._settings, 'imageScale', 0.01, 5).step(0.01);
+
     this._tweenObject = {
         currentIndex: 0,
         index: 0,
         startAngle: Math.PI/2, 
-        arcAngle: 0
+        arcAngle: 0,
+        tweenProgress: 0
     }
 
     this._colors = [
@@ -109,8 +108,6 @@ class CanvasComponent {
     this._stats.showPanel(0);
     document.body.appendChild(this._stats.dom);
 
-    this._delta = 0;
-
     this._init();
   }
 
@@ -126,25 +123,38 @@ class CanvasComponent {
     this._loadImages();
   }
 
+  _start() {
+    this._setupEventListener();
+  }
+
+  _loadImages() {
+    let path = './assets/images/';
+    let promises = [];
+    let img;
+    
+    for (let i = 0; i < data.length; i++) {
+      let url = `${path}${data[i].fileName}`;
+      img = new Image();
+      img.src = url;
+      let promise = new Promise((resolve, reject) => {
+        img.addEventListener('load', resolve(img));
+        img.addEventListener('error', () => {
+          reject(new Error(`Failed to load image's URL: ${url}`));
+        });
+      });
+      promises.push(promise);
+    }
+
+    Promise.all(promises).then(result => {
+      this._images = result;  
+      this._start();
+    });
+  }
+
   _setColor() {
     TweenLite.set(this._canvas.style, { backgroundColor: this._colors[this._tweenObject.index].primary });
     TweenLite.set(this.ui.color, { color: this._colors[this._tweenObject.index].secondary });
     TweenLite.set(this.ui.background, { backgroundColor: this._colors[this._tweenObject.index].secondary });
-  }
-
-  _updateColor() {
-    const duration = 0.5; 
-    const delay = 0.8;
-
-    TweenLite.to(this._canvas.style, duration, { backgroundColor: this._colors[this._tweenObject.index].primary, delay: delay });
-    TweenLite.to(this.ui.color, duration, { color: this._colors[this._tweenObject.index].secondary, delay: delay });
-    TweenLite.to(this.ui.background, duration, { backgroundColor: this._colors[this._tweenObject.index].secondary, delay: delay });
-
-    setTimeout(() => {
-      this.component.scrollIndicator.updateColor(this._colors[this._tweenObject.index].secondary);
-      this.component.cursor.updateColor(this._colors[this._tweenObject.index].secondary);
-    }, delay * 1000);
-
   }
 
   _initPositions() {
@@ -178,59 +188,47 @@ class CanvasComponent {
     }
   }
 
-  _createCircleRuler() {
-    let cirlceRadius = this._width/4;
+  _createImages() {
+    const width = this._width * this._settings.imageScale;
+    const aspectRatio = this._images[this._tweenObject.index].width / this._images[this._tweenObject.index].height;
+    const height = width / aspectRatio; 
 
-    this._ctx.strokeStyle = 'black';
-    
-    this._ctx.beginPath();
-    this._ctx.arc(this._origin.x, this._origin.y, cirlceRadius, 0, Math.PI * 2);
-    this._ctx.stroke();
-    this._ctx.closePath();
-    
-    this._ctx.fillStyle = 'red';
-
-    this._ctx.beginPath();
-    this._ctx.arc(this._origin.x, this._origin.y, 5, 0, Math.PI * 2);
-    this._ctx.fill();
-    this._ctx.closePath();
+    for (let i = 0; i < this._positions.length; i++) {
+      this._ctx.setTransform(1, 0, 0, 1, this._positions[i].x, this._positions[i].y + height); 
+      this._ctx.rotate(this._rotationAngles[i] + (Math.PI/2));
+      this._ctx.drawImage(this._images[this._tweenObject.index], - width, - height, width, height);
+      this._ctx.setTransform(1, 0, 0, 1, 0, 0);
+    }
   }
 
-  _next() {
-    this._closeImage();
-  }
-
-  _previous() {
-    console.log('TODO: Previous Animation');
-  }
-
-  _closeImage() {
+  /*
+    TWEENS
+    todo: Use only one tween and control the progress
+  */
+  _setupCloseTween() {
     const duration = 1.5;
 
-    this._timelineClose = new TimelineMax({
-      paused: false,
-      onUpdate: this._onCloseUpdateHandler,
-      onComplete: this._onCloseCompleteHandler
-    });
+    this._timelineClose = new TimelineLite({ paused: true });
 
     this._timelineClose.to(this._tweenObject, duration, {arcAngle: Math.PI/2, ease: Power3.easeIn}, 0);
     this._timelineClose.to(this._tweenObject, duration, {startAngle: Math.PI, ease: Power2.easeInOut}, duration/2);
   }
 
-  _onCloseUpdateHandler() {
-    this.component.cursor.progress(this._timelineClose.progress());
-  }
+  _closeImage() {
+    let duration = 1.5;
 
-  _onCloseCompleteHandler() {
-    this._updateIndex();
-    this._openImage();
-    this._updateColor();
+    let timeline = new TimelineLite({
+      onUpdate: this._onCloseUpdateHandler,
+      onComplete: this._onCloseCompleteHandler
+    });
+
+    timeline.to(this._tweenObject, duration, { tweenProgress: 1, ease: Power0.easeNone })
   }
 
   _openImage() {
     const duration = 1.5;
 
-    this._timelineOpen = new TimelineMax({
+    this._timelineOpen = new TimelineLite({
       onUpdate: this._onOpenUpdateHandler,
       onComplete: this._onOpenCompleteHandler
     });
@@ -238,13 +236,22 @@ class CanvasComponent {
     this._timelineOpen.fromTo(this._tweenObject, duration, {startAngle: 0, arcAngle: 0}, {startAngle: Math.PI/2, ease: Power2.easeInOut}, 0);
   }
 
-  _onOpenCompleteHandler() {
-    this._isScrollEnabled = true;
-  }
 
-  _onOpenUpdateHandler() {
-    this.component.cursor.progress(1 - this._timelineOpen.progress());
-    this.component.cursor.rotate(this._timelineOpen.progress());
+  /*
+    UPDATE FUNCTIONS
+  */
+  _updateColor() {
+    const duration = 0.5; 
+    const delay = 0.8;
+
+    TweenLite.to(this._canvas.style, duration, { backgroundColor: this._colors[this._tweenObject.index].primary, delay: delay });
+    TweenLite.to(this.ui.color, duration, { color: this._colors[this._tweenObject.index].secondary, delay: delay });
+    TweenLite.to(this.ui.background, duration, { backgroundColor: this._colors[this._tweenObject.index].secondary, delay: delay });
+
+    setTimeout(() => {
+      this.component.scrollIndicator.updateColor(this._colors[this._tweenObject.index].secondary);
+      this.component.cursor.updateColor(this._colors[this._tweenObject.index].secondary);
+    }, delay * 1000);
   }
 
   _updatePositions() {
@@ -279,48 +286,21 @@ class CanvasComponent {
     this._tweenObject.index = this._mod(index, data.length);
   }
 
-  _loadImages() {
-    let path = './assets/images/';
-    let promises = [];
-    let img;
-    
-    for (let i = 0; i < data.length; i++) {
-      let url = `${path}${data[i].fileName}`;
-      img = new Image();
-      img.src = url;
-      let promise = new Promise((resolve, reject) => {
-        img.addEventListener('load', resolve(img));
-        img.addEventListener('error', () => {
-          reject(new Error(`Failed to load image's URL: ${url}`));
-        });
-      });
-      promises.push(promise);
-    }
-
-    Promise.all(promises).then(result => {
-      this._images = result;  
-      this._start();
-    });
+  /*
+    TRIGGERs
+  */
+  _next() {
+    this._setupCloseTween();
+    this._closeImage();
   }
 
-  _start() {
-    this._setupEventListener();
+  _previous() {
+    console.log('TODO: Previous Animation');
   }
 
-  _createImages() {
-    const width = this._width * this._settings.imageScale;
-    const aspectRatio = this._images[this._tweenObject.index].width / this._images[this._tweenObject.index].height;
-    const height = width / aspectRatio; 
-
-    for (let i = 0; i < this._positions.length; i++) {
-      this._ctx.setTransform(1, 0, 0, 1, this._positions[i].x, this._positions[i].y + height); 
-      this._ctx.rotate(this._rotationAngles[i] + (Math.PI/2));
-      this._ctx.drawImage(this._images[this._tweenObject.index], - width, - height, width, height);
-      this._ctx.setTransform(1, 0, 0, 1, 0, 0);
-    }
-
-  }
-
+  /*
+    TICKER/RESIZE
+  */
   _draw() {
     this._ctx.clearRect(0, 0, this._width, this._height);
 
@@ -341,24 +321,6 @@ class CanvasComponent {
     this._canvas.height = this._height;
   }
 
-  _getSectionPosition() {
-    this._container = {
-      left: this.ui.section.getBoundingClientRect().left,
-      top: this.ui.section.getBoundingClientRect().top,
-      right: this.ui.section.getBoundingClientRect().right,
-      bottom: this.ui.section.getBoundingClientRect().bottom,
-      padding: window.getComputedStyle(this.ui.section).paddingLeft
-    }
-  }
-
-  _mod(n, m) {
-    return ((n % m) + m) % m;
-  }
-
-  _getNumber(string) {
-    return parseInt(string.substring(0, string.length - 2))
-  }
-
   _setupEventListener() {
     TweenLite.ticker.addEventListener('tick', this._tickHandler);
 
@@ -369,6 +331,9 @@ class CanvasComponent {
     ScrollModule.addEventListener('wheel:end', this._wheelEndHandler);
   }
 
+  /*
+    HANDLER
+  */
   _tickHandler() {
     this._stats.begin();//STATS
     
@@ -392,7 +357,6 @@ class CanvasComponent {
       this._isScrollEnabled = false;
     } else if (this._scrollDelta.y <  - this._settings.wheelSensibility && this._isScrollEnabled == true) {
       this._previous();
-      // this._isScrollEnabled = false;
     }
   }
   
@@ -407,6 +371,48 @@ class CanvasComponent {
       y: e.clientY
     }
     this.component.cursor.move(this._mousePosition);
+  }
+
+  _onOpenCompleteHandler() {
+    this._isScrollEnabled = true;
+  }
+
+  _onOpenUpdateHandler() {
+    this.component.cursor.progress(1 - this._timelineOpen.progress());
+    this.component.cursor.rotate(this._timelineOpen.progress());
+  }
+
+  _onCloseUpdateHandler() {
+    this._timelineClose.progress(this._tweenObject.tweenProgress);
+    this.component.cursor.progress(this._timelineClose.progress());
+  }
+
+  _onCloseCompleteHandler() {
+    this._updateIndex();
+    this._openImage();
+    this._updateColor();
+    this._tweenObject.tweenProgress = 0;
+  }
+
+  /*
+    UTILS
+  */
+ _getSectionPosition() {
+  this._container = {
+    left: this.ui.section.getBoundingClientRect().left,
+    top: this.ui.section.getBoundingClientRect().top,
+    right: this.ui.section.getBoundingClientRect().right,
+    bottom: this.ui.section.getBoundingClientRect().bottom,
+    padding: window.getComputedStyle(this.ui.section).paddingLeft
+  }
+}
+
+  _mod(n, m) {
+    return ((n % m) + m) % m;
+  }
+
+  _getNumber(string) {
+    return parseInt(string.substring(0, string.length - 2))
   }
 }
 

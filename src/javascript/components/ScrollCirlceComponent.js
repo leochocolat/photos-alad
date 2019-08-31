@@ -1,7 +1,7 @@
 //IMPORTS
 import _ from 'underscore';
 import {TweenMax, TimelineLite, TweenLite, Power0, Power3} from 'gsap/TweenMax';
-import Lerp from '../utils/Lerp.js';
+import ColorUtil from '../utils/ColorUtil';
 // EXAMPLE
 class ScrollCircleComponent {
 
@@ -62,7 +62,9 @@ class ScrollCircleComponent {
   }
 
   _drawArc() {
-    this._ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+    let color = ColorUtil.HexaToRGB(this._tweenObject.color);
+
+    this._ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.2)`;
     this._ctx.beginPath();
     this._ctx.arc(this._width/2, this._height/2, this._cirlceWidth/2, 0, 2 * Math.PI);
     this._ctx.stroke();
