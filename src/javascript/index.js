@@ -1,8 +1,10 @@
 //IMPORTS
-// import CanvasRectangleComponent from './components/CanvasRectanglesComponent.js';//CANVAS 
-// import CanvasComponentRotationImage from './components/CanvasComponentRotationImage.js';//CANVAS 
-// import CanvasThreeComponent from './components/CanvasThreeComponent.js';//THREE 
-// import CanvasThreeSpiralComponent from './components/CanvasThreeSpiralComponent.js';//THREE 
-// import PixiComponent from './components/PixiComponent.js';//PIXI 
+// import CanvasRectangleComponent from './components/CanvasRectanglesComponent';//CANVAS 
+// import CanvasComponentRotationImage from './components/CanvasComponentRotationImage';//CANVAS 
+// import CanvasThreeComponent from './components/CanvasThreeComponent';//THREE 
+// import CanvasThreeSpiralComponent from './components/CanvasThreeSpiralComponent';//THREE 
+// import PixiComponent from './components/PixiComponent';//PIXI 
 
-import CanvasComponent from './components/CanvasComponent.js';
+import CanvasComponent from './components/CanvasComponent';
+
+// import AnimationTest from './components/AnimationTest';
