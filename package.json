@@ -38,7 +38,7 @@
     "pixi.js": "^4.8.5",
     "stats.js": "^0.17.0",
     "three": "^0.106.2",
-    "underscore": "^1.9.1",
+    "underscore": "^1.12.1",
     "wheel": "0.0.5"
   }
 }
